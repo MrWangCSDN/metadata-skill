@@ -16,13 +16,14 @@ description: 处理基于 XML 的复合类型元数据文件（*.c_schema.xml）
 **处理步骤**：
 
 1. **确定 SchemaId** — 全局唯一，同时作为文件名前缀（如 `FtAcctgType`）
-2. **确定领域和包路径** — 根据领域映射模块和包路径（详见 [references/package-module-mapping.md](references/package-module-mapping.md)）
-3. **定义 complexType 列表** — 每个复合对象一个 `complexType`
-4. **调用 MCP 查询字段** — 使用 `dict-mcp-server.getDictDefByLongNameList` 批量查询所有 element 的字段元数据
-5. **过滤未贯标字段** — MCP 返回 null 的字段**强制不写入 XML**，统一提示（⚠️ 强制规则）
-6. **处理复合类型引用字段** — 此类字段不查 MCP，`type` 使用 `{SchemaId}.{ComplexTypeId}` 格式，无 `ref` 属性
-7. **生成 XML** — 按标准模板生成（属性单行，4 空格缩进）
-8. **保存文件** — 保存至 `{模块}/src/main/resources/type/{SchemaId}.c_schema.xml`
+2. **确定领域、模块和包路径** — 根据领域映射 resources/beans 模块和包路径（详见 [references/package-module-mapping.md](references/package-module-mapping.md)）
+3. **确定文件路径** — 未指定子目录时，默认存放在 `{模块}/src/main/resources/type/` 下；指定子目录时在该目录下创建子目录（详见下方「文件路径规则」）
+4. **定义 complexType 列表** — 每个复合对象一个 `complexType`
+5. **调用 MCP 查询字段** — 使用 `dict-mcp-server.getDictDefByLongNameList` 批量查询所有 element 的字段元数据
+6. **过滤未贯标字段** — MCP 返回 null 的字段**强制不写入 XML**，统一提示（⚠️ 强制规则）
+7. **处理复合类型引用字段** — 此类字段不查 MCP，`type` 使用 `{SchemaId}.{ComplexTypeId}` 格式，无 `ref` 属性
+8. **生成 XML** — 按标准模板生成（属性单行，同级无空行，子标签缩进 4 空格）
+9. **保存文件** — 保存至确定的目标路径，输出文件路径和 package 信息
 
 ### 模式 2：修改现有复合类型文件
 
@@ -42,6 +43,50 @@ description: 处理基于 XML 的复合类型元数据文件（*.c_schema.xml）
 
 - 删除整个 `complexType` 节点，或删除指定 `element`
 - 若整个文件无 `complexType`，询问是否删除文件
+
+---
+
+## 文件路径规则
+
+### 默认路径（未指定子目录）
+
+文件直接创建在模块的 `src/main/resources/type/` 目录下：
+
+```
+{xxx-resources}/src/main/resources/type/{SchemaId}.c_schema.xml
+{xxx-beans}/src/main/resources/type/{SchemaId}.c_schema.xml
+```
+
+同时，`schema` 的 `package` 属性使用领域基础包路径（不含子目录）：
+
+| 领域 | 默认文件路径 | 默认 package |
+|------|------------|-------------|
+| 存款 | `dept-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.dept.resources.type` |
+| 贷款 | `loan-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.loan.resources.type` |
+| 结算 | `sett-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.sett.resources.type` |
+| 平台公共 | `comm-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.comm.resources.type` |
+
+### 指定子目录
+
+文件创建在 `src/main/resources/type/{子目录}/` 下，子目录**同时追加到 `package` 属性**（路径分隔符 `/` 转为 `.`）：
+
+```
+{xxx-resources}/src/main/resources/type/{子目录}/{SchemaId}.c_schema.xml
+```
+
+**示例：贷款领域，子目录 `ft/repay`**
+
+```
+文件路径：loan-resources/src/main/resources/type/ft/repay/FtAcctgType.c_schema.xml
+package：  com.spdb.ccbs.loan.resources.type.ft.repay
+```
+
+**子目录路径规则**：
+- 文件路径中使用 `/` 分隔（如 `ft/repay`）
+- `package` 属性中使用 `.` 分隔（如 `ft.repay`）
+- 子目录不存在时自动创建
+
+详细映射表见 [references/package-module-mapping.md](references/package-module-mapping.md)
 
 ---
 
@@ -167,7 +212,8 @@ description: 处理基于 XML 的复合类型元数据文件（*.c_schema.xml）
 ### 创建流程
 
 - [ ] 确认 SchemaId（全局唯一，与文件名前缀一致）
-- [ ] 确定领域，映射包路径和模块
+- [ ] 确定领域，映射 resources/beans 模块和包路径
+- [ ] 确定文件路径：无子目录 → `{模块}/src/main/resources/type/`；有子目录 → 在该目录下创建子目录，package 同步追加子目录
 - [ ] 整理 complexType 列表（每个对象的 id、longname、字段列表）
 - [ ] 区分普通字段（查 MCP）和复合类型引用字段（不查 MCP）
 - [ ] 调用 `dict-mcp-server.getDictDefByLongNameList` 批量查询普通字段

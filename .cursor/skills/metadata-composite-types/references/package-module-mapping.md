@@ -18,35 +18,47 @@
 
 创建 `c_schema.xml` 时，`package` 属性填写 **resources** 对应的包路径。
 
-## 子包路径
+## 文件存放路径规则
 
-复合类型通常按功能模块组织子包，直接追加到领域基础包后：
+### 默认路径（未指定子目录）
 
-```
-com.spdb.ccbs.loan.resources.type.ft.repay
-                                  ↑   ↑
-                              功能域 子模块
-```
-
-**示例**：
-
-| SchemaId | 领域 | 完整 package |
-|---------|------|-------------|
-| FtAcctgType | 贷款（福费延） | com.spdb.ccbs.loan.resources.type.ft.repay |
-| SyndAgrmLoanType | 贷款（银团） | com.spdb.ccbs.loan.resources.type.synd |
-| CustInfoType | 平台公共 | com.spdb.ccbs.comm.resources.type.cust |
-
-## 文件存放路径
+文件直接创建在各模块的 `src/main/resources/type/` 根目录下：
 
 ```
-{模块}/src/main/resources/type/{子路径}/{SchemaId}.c_schema.xml
+{xxx-resources}/src/main/resources/type/{SchemaId}.c_schema.xml
 ```
 
-**示例**：
+**四领域默认路径**：
+
+| 领域 | 默认文件路径 | 默认 package |
+|------|------------|-------------|
+| 存款 | `dept-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.dept.resources.type` |
+| 贷款 | `loan-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.loan.resources.type` |
+| 结算 | `sett-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.sett.resources.type` |
+| 平台公共 | `comm-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.comm.resources.type` |
+
+### 指定子目录
+
+在 `src/main/resources/type/` 下创建子目录，**`package` 属性同步追加子目录**（`/` 转为 `.`）：
+
 ```
-loan-resources/src/main/resources/type/ft/repay/FtAcctgType.c_schema.xml
-comm-resources/src/main/resources/type/cust/CustInfoType.c_schema.xml
+{xxx-resources}/src/main/resources/type/{子目录}/{SchemaId}.c_schema.xml
+package = {领域基础包}.{子目录（用.分隔）}
 ```
+
+**路径与 package 对应关系**：
+
+| 子目录（路径） | 文件路径示例 | schema package |
+|--------------|------------|----------------|
+| `ft/repay` | `loan-resources/src/main/resources/type/ft/repay/FtAcctgType.c_schema.xml` | `com.spdb.ccbs.loan.resources.type.ft.repay` |
+| `synd` | `loan-resources/src/main/resources/type/synd/SyndAgrmLoanType.c_schema.xml` | `com.spdb.ccbs.loan.resources.type.synd` |
+| `cust` | `comm-resources/src/main/resources/type/cust/CustInfoType.c_schema.xml` | `com.spdb.ccbs.comm.resources.type.cust` |
+| `acct/query` | `dept-resources/src/main/resources/type/acct/query/AcctQryType.c_schema.xml` | `com.spdb.ccbs.dept.resources.type.acct.query` |
+
+**子目录规则**：
+- 文件路径中使用 `/` 分隔（如 `ft/repay`）
+- `package` 中使用 `.` 分隔（如 `ft.repay`）
+- 子目录不存在时自动创建
 
 ## 快速参考
 
