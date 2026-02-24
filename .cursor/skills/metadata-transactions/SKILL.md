@@ -20,9 +20,9 @@ description: 处理基于 XML 的 flowtran 联机交易元数据模型的创建�
 3. **检查文件存在性** — 在 `trans` 目录下查找 `.flowtrans.xml`，已存在则自动切换为修改模式
 4. **处理子目录** — 检查是否指定子目录，追加到包路径和文件路径
 5. **调用 MCP 查询字段** — 使用 `dict-mcp-server.getDictDefByLongNameList` 批量查询（详见 [references/mcp-integration.md](references/mcp-integration.md)）
-6. **处理未贯标字段** — 收集返回 null 的字段，处理完成后统一提示
-7. **生成 XML** — 按标准模板生成（属性单行，标签间无空行，4 空格缩进）
-8. **保存并反馈** — 保存至 `{模块}-pbf/src/main/resources/trans/{交易码}.flowtrans.xml`
+6. **过滤未贯标字段** — MCP 返回 null 的字段**强制不写入 XML**，收集后统一提示用户（⚠️ 强制规则，不可跳过）
+7. **生成 XML** — 仅对已贯标字段生成标签，按标准模板生成（属性单行，标签间无空行，4 空格缩进）
+8. **保存并反馈** — 保存至 `{模块}-pbf/src/main/resources/trans/{交易码}.flowtrans.xml`，反馈中明确列出被排除的字段
 
 ### 模式 2：修改现有交易
 
@@ -76,7 +76,12 @@ description: 处理基于 XML 的 flowtran 联机交易元数据模型的创建�
 - 输入：字段中文名称数组，如 `["国家", "性别"]`
 - 输出：`Map<中文名, 字段定义对象 | null>`，`null` 表示未贯标
 - **调用时机**：创建或修改时，一次性批量查询所有字段
-- **未贯标处理**：继续处理其他已贯标字段，最后统一提示未贯标字段列表
+
+> ⛔ **强制规则：MCP 返回 null 的字段，禁止写入 XML。**
+>
+> - null 字段不生成任何 `<field>` 或 `<fields>` 标签
+> - 即使数组（fields）中只有部分子字段为 null，整个数组仍按实际贯标字段生成；若数组内所有子字段均为 null，则整个 `<fields>` 标签也不写入
+> - 生成完成后，在反馈中列出所有被排除的字段名，提示用户完成贯标后重新执行
 
 详见 [references/mcp-integration.md](references/mcp-integration.md)
 
@@ -165,9 +170,10 @@ chargCdArray 收费代码数组 end
 - [ ] 检查 `.flowtrans.xml` 是否已存在（存在则切换修改模式）
 - [ ] 处理子目录（如有，追加到路径和包名）
 - [ ] 调用 `dict-mcp-server.getDictDefByLongNameList` 批量查询
-- [ ] 处理数组字段（识别 start/end 标记，生成 fields 标签）
-- [ ] 收集未贯标字段，统一提示
-- [ ] 生成 XML（属性单行，无空行，4空格缩进）
+- [ ] **强制过滤**：将 MCP 返回 null 的字段从字段列表中移除，不得写入 XML
+- [ ] 处理数组字段（识别 start/end 标记；子字段全为 null 则整个 fields 标签不写入）
+- [ ] 生成 XML（仅已贯标字段，属性单行，无空行，4空格缩进）
+- [ ] 收集所有被排除字段，在反馈中统一提示
 - [ ] 保存至 `{模块}-pbf/src/main/resources/trans/`
 - [ ] 输出反馈摘要
 
