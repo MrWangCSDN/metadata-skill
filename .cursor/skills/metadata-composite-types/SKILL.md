@@ -146,9 +146,17 @@ description: 处理基于 XML 的复合类型元数据文件（*.c_schema.xml）
 ```
 
 **格式要点**：
-- `schema` 标签属性可多行；`complexType` 和 `element` 属性必须单行
-- 每个 `element` 属性顺序：`id → longname → type → required → multi → range → array → final → override → allowSubType → key → ref`
-- 4 空格缩进，禁用 Tab
+
+| 规则 | 说明 |
+|------|------|
+| 子标签缩进 | 子标签相对父标签首行缩进 **4 个空格**（`complexType` 缩进 4，`element` 缩进 8） |
+| 同级无空行 | **同级标签之间不换行**，`element` 之间、`complexType` 之间均不允许有空行 |
+| 属性单行 | `complexType` 和 `element` 的所有属性必须在同一行内，不得换行 |
+| 禁用 Tab | 只使用空格缩进，禁止 Tab 字符 |
+| 自闭合 | `element` 使用 `/>` 自闭合结尾 |
+| schema 属性 | `schema` 标签属性可多行，其余标签不可 |
+
+每个 `element` 属性顺序：`id → longname → type → required → multi → range → array → final → override → allowSubType → key → [ref]`
 
 完整模板说明见 [references/xml-template.md](references/xml-template.md)
 

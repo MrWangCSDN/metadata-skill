@@ -142,44 +142,111 @@ id → longname → type → required → multi → range → array → final �
 
 ### 缩进规则
 
-| 层级 | 标签 | 空格数 |
-|------|------|--------|
-| 0 | `<schema>` | 0 |
-| 1 | `<complexType>` | 4 |
-| 2 | `<element>` | 8 |
+子标签相对父标签首行缩进 **4 个空格**，每深一层追加 4 个空格：
 
-### 关键格式要求
+| 层级 | 标签 | 空格数 | 说明 |
+|------|------|--------|------|
+| 0 | `<schema>` | 0 | 根标签 |
+| 1 | `<complexType>` | 4 | schema 的子标签，缩进 4 |
+| 2 | `<element>` | 8 | complexType 的子标签，缩进 8 |
 
-- `<schema>` 标签属性可以多行（按自然换行即可）
-- `<complexType>` 和 `<element>` **所有属性必须在一行内**
-- 标签之间不要有空行
-- 使用 4 个空格缩进，**禁用 Tab**
-- `<element>` 使用自闭合 `/>` 结尾
+### 同级标签间距规则
 
-### 正确格式
+> ⛔ **同级标签之间不换行（无空行）**，紧密排列。
 
+**正确** ✅：
 ```xml
-<complexType abstract="false" dict="false" id="FtAcctRepayChkInPojo" introduct="false" localName="" longname="福费延还款校验输入" extension="" tags="">
-    <element id="fRFTGDueBillCd" longname="福费延借据编码" type="MBaseType.U_DAI_KUAN_JIE_JU_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.F.fRFTGDueBillCd"/>
-    <element id="fncgBsnID" longname="融资业务编码" type="MBaseType.U_RONG_ZI_YE_WU_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.F.fncgBsnID"/>
-</complexType>
+<schema ...>
+    <complexType ...>
+        <element .../>
+        <element .../>
+    </complexType>
+    <complexType ...>
+        <element .../>
+    </complexType>
+</schema>
 ```
 
-### 错误格式（禁止）
+**错误** ❌（同级标签间有空行）：
+```xml
+<schema ...>
+    <complexType ...>
+        <element .../>
 
+        <element .../>    <!-- ❌ 同级 element 之间不允许空行 -->
+    </complexType>
+
+    <complexType ...>     <!-- ❌ 同级 complexType 之间不允许空行 -->
+        <element .../>
+    </complexType>
+</schema>
+```
+
+### 属性格式规则
+
+- `<complexType>` 和 `<element>` **所有属性必须在同一行内**，不得换行
+- 使用 4 个空格缩进，**禁用 Tab**
+- `<element>` 使用自闭合 `/>` 结尾
+- `<schema>` 标签属性可以多行（按自然换行即可）
+
+### 完整格式示例
+
+**正确** ✅：
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtAcctgType" package="com.spdb.ccbs.loan.resources.type.ft.repay" longname="福费延还款复合类型" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+    <complexType abstract="false" dict="false" id="FtAcctRepayChkInPojo" introduct="false" localName="" longname="福费延还款校验输入" extension="" tags="">
+        <element id="fRFTGDueBillCd" longname="福费延借据编码" type="MBaseType.U_DAI_KUAN_JIE_JU_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.F.fRFTGDueBillCd"/>
+        <element id="fncgBsnID" longname="融资业务编码" type="MBaseType.U_RONG_ZI_YE_WU_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.F.fncgBsnID"/>
+    </complexType>
+    <complexType abstract="false" dict="false" id="FtAcctRepayChkOutPojo" introduct="false" localName="" longname="福费延还款校验输出" extension="" tags="">
+        <element id="fRFTGDueBillCd" longname="福费延借据编码" type="MBaseType.U_DAI_KUAN_JIE_JU_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.F.fRFTGDueBillCd"/>
+        <element id="fncgBsnID" longname="融资业务编码" type="MBaseType.U_RONG_ZI_YE_WU_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.F.fncgBsnID"/>
+    </complexType>
+</schema>
+```
+
+**错误** ❌（多种错误汇总）：
 ```xml
 <!-- ❌ element 属性换行 -->
 <element id="fRFTGDueBillCd"
          longname="福费延借据编码"
          type="MBaseType.U_DAI_KUAN_JIE_JU_BIAN_MA"/>
 
-<!-- ❌ 标签间有空行 -->
+<!-- ❌ 同级 element 之间有空行 -->
 <complexType ...>
     <element .../>
 
     <element .../>
 </complexType>
+
+<!-- ❌ 同级 complexType 之间有空行 -->
+<schema ...>
+    <complexType .../>
+
+    <complexType .../>
+</schema>
+
+<!-- ❌ 使用 Tab 缩进 -->
+<schema ...>
+	<complexType ...>    ← Tab 字符，禁止
+		<element .../>
+	</complexType>
+</schema>
 ```
+
+### 格式规范速查清单
+
+生成 XML 前必须确认：
+
+- [ ] `<complexType>` 缩进 4 个空格（相对 `<schema>`）
+- [ ] `<element>` 缩进 8 个空格（相对 `<schema>`，即 `<complexType>` 再加 4）
+- [ ] **同级 `<element>` 之间无空行**
+- [ ] **同级 `<complexType>` 之间无空行**
+- [ ] `<complexType>` 所有属性在同一行
+- [ ] `<element>` 所有属性在同一行
+- [ ] 使用空格缩进，无 Tab 字符
+- [ ] `<element>` 以 `/>` 自闭合结尾
 
 ---
 
