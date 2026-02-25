@@ -48,43 +48,53 @@ description: 处理基于 XML 的复合类型元数据文件（*.c_schema.xml）
 
 ## 文件路径规则
 
-### 默认路径（未指定子目录）
+> ⛔ **强制决策逻辑**：生成文件前必须先执行以下判断，不得跳过。
 
-文件直接创建在模块的 `src/main/resources/type/` 目录下：
+### 判断流程
 
 ```
-{xxx-resources}/src/main/resources/type/{SchemaId}.c_schema.xml
-{xxx-beans}/src/main/resources/type/{SchemaId}.c_schema.xml
+用户是否指定子目录？
+│
+├─ 否（未提及子目录）→ 【默认路径】直接放在 type/ 根目录下
+│                       package = 领域基础包（不追加任何子路径）
+│
+└─ 是（明确说了子目录）→ 【子目录路径】放在 type/{子目录}/ 下
+                         package = 领域基础包 + .{子目录用.分隔}
 ```
 
-同时，`schema` 的 `package` 属性使用领域基础包路径（不含子目录）：
+### 默认路径（⛔ 未指定子目录时强制使用）
 
-| 领域 | 默认文件路径 | 默认 package |
-|------|------------|-------------|
+> **用户未提及子目录 → 文件直接创建在 `type/` 根目录，package 不追加任何子路径。**
+
+| 领域 | 文件路径 | schema package |
+|------|---------|----------------|
 | 存款 | `dept-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.dept.resources.type` |
 | 贷款 | `loan-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.loan.resources.type` |
 | 结算 | `sett-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.sett.resources.type` |
 | 平台公共 | `comm-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.comm.resources.type` |
 
+**示例（贷款领域，无子目录）**：
+```
+文件路径：loan-resources/src/main/resources/type/LoanApplType.c_schema.xml
+package： com.spdb.ccbs.loan.resources.type
+```
+
 ### 指定子目录
 
-文件创建在 `src/main/resources/type/{子目录}/` 下，子目录**同时追加到 `package` 属性**（路径分隔符 `/` 转为 `.`）：
+> 用户明确指定子目录时，文件创建在 `type/{子目录}/` 下，package **同步追加**子目录。
 
 ```
-{xxx-resources}/src/main/resources/type/{子目录}/{SchemaId}.c_schema.xml
+文件路径：{xxx-resources}/src/main/resources/type/{子目录}/{SchemaId}.c_schema.xml
+package： {领域基础包}.{子目录（/改为.）}
 ```
 
-**示例：贷款领域，子目录 `ft/repay`**
-
+**示例（贷款领域，子目录 `ft/repay`）**：
 ```
 文件路径：loan-resources/src/main/resources/type/ft/repay/FtAcctgType.c_schema.xml
-package：  com.spdb.ccbs.loan.resources.type.ft.repay
+package： com.spdb.ccbs.loan.resources.type.ft.repay
 ```
 
-**子目录路径规则**：
-- 文件路径中使用 `/` 分隔（如 `ft/repay`）
-- `package` 属性中使用 `.` 分隔（如 `ft.repay`）
-- 子目录不存在时自动创建
+**路径转换规则**：文件路径 `/` → package 中的 `.`（如 `ft/repay` → `ft.repay`）
 
 详细映射表见 [references/package-module-mapping.md](references/package-module-mapping.md)
 
@@ -160,12 +170,10 @@ package：  com.spdb.ccbs.loan.resources.type.ft.repay
 - `multi="false"` → 单个对象；`multi="true"` → 对象数组（List）
 
 ```xml
-<element required="false" multi="false" range="false" array="false" final="false"
-         override="false" allowSubType="true" key="false"
-         type="SyndAgrmLoanType.SysdAgrmLoanInfoPojo"
-         longname="银团贷款出资份额信息"
-         id="lstSyndAgrmLoanQryOutPojo"/>
+<element id="lstSyndAgrmLoanQryOutPojo" longname="银团贷款出资份额信息" type="SyndAgrmLoanType.SysdAgrmLoanInfoPojo" required="false" multi="true" range="false" array="false" final="false" override="false" allowSubType="true" key="false"/>
 ```
+
+> ⛔ 注意：上方示例中所有属性必须写在同一行，不得换行。
 
 ---
 
@@ -190,16 +198,16 @@ package：  com.spdb.ccbs.loan.resources.type.ft.repay
 </schema>
 ```
 
-**格式要点**：
+**格式强制规则**：
 
-| 规则 | 说明 |
-|------|------|
-| 子标签缩进 | 子标签相对父标签首行缩进 **4 个空格**（`complexType` 缩进 4，`element` 缩进 8） |
-| 同级无空行 | **同级标签之间不换行**，`element` 之间、`complexType` 之间均不允许有空行 |
-| 属性单行 | `complexType` 和 `element` 的所有属性必须在同一行内，不得换行 |
-| 禁用 Tab | 只使用空格缩进，禁止 Tab 字符 |
-| 自闭合 | `element` 使用 `/>` 自闭合结尾 |
-| schema 属性 | `schema` 标签属性可多行，其余标签不可 |
+| 规则 | 说明 | 强制等级 |
+|------|------|---------|
+| ⛔ 属性不换行 | `complexType` 和 `element` 的**所有属性必须写在同一行**，绝对不允许换行 | 强制 |
+| ⛔ 同级无空行 | 同级 `element` 之间、同级 `complexType` 之间**不允许有空行** | 强制 |
+| ⛔ 禁用 Tab | 只使用空格缩进，禁止任何 Tab 字符 | 强制 |
+| 子标签缩进 | 子标签相对父标签缩进 **4 个空格**（`complexType` = 4格，`element` = 8格） | 必须 |
+| 自闭合 | `element` 使用 `/>` 自闭合结尾 | 必须 |
+| schema 例外 | `schema` 标签属性**可以**多行，这是唯一的例外 | 允许 |
 
 每个 `element` 属性顺序：`id → longname → type → required → multi → range → array → final → override → allowSubType → key → [ref]`
 
@@ -212,15 +220,17 @@ package：  com.spdb.ccbs.loan.resources.type.ft.repay
 ### 创建流程
 
 - [ ] 确认 SchemaId（全局唯一，与文件名前缀一致）
-- [ ] 确定领域，映射 resources/beans 模块和包路径
-- [ ] 确定文件路径：无子目录 → `{模块}/src/main/resources/type/`；有子目录 → 在该目录下创建子目录，package 同步追加子目录
+- [ ] 确定领域，映射 resources 模块和基础包路径
+- [ ] ⛔ **路径判断**：用户是否指定子目录？
+  - 否 → 文件路径 = `{模块}/src/main/resources/type/{SchemaId}.c_schema.xml`，package = 领域基础包（不追加子路径）
+  - 是 → 文件路径追加子目录，package 同步追加（`/` 转 `.`）
 - [ ] 整理 complexType 列表（每个对象的 id、longname、字段列表）
 - [ ] 区分普通字段（查 MCP）和复合类型引用字段（不查 MCP）
 - [ ] 调用 `dict-mcp-server.getDictDefByLongNameList` 批量查询普通字段
-- [ ] **强制过滤**：MCP 返回 null 的字段不写入 XML
-- [ ] 生成 XML（属性单行，4空格缩进）
-- [ ] 保存至 `{模块}/src/main/resources/type/`
-- [ ] 输出反馈（写入字段数、排除字段列表）
+- [ ] ⛔ **强制过滤**：MCP 返回 null 的字段不写入 XML
+- [ ] 生成 XML：⛔ `complexType` 和 `element` 所有属性必须在同一行，不换行；同级标签无空行；子标签缩进 4 空格
+- [ ] 保存至确定的目标路径
+- [ ] 输出反馈（文件路径、package、写入字段数、排除字段列表）
 
 ### 修改流程
 
