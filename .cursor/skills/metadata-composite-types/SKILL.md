@@ -181,12 +181,7 @@ package： com.spdb.ccbs.loan.resources.type.ft.repay
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        id="FtAcctgType"
-        package="com.spdb.ccbs.loan.resources.type.ft.repay"
-        longname="福费延还款复合类型"
-        classgen="auto"
-        xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtAcctgType" package="com.spdb.ccbs.loan.resources.type.ft.repay" longname="福费延还款复合类型" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <complexType abstract="false" dict="false" id="FtAcctRepayChkInPojo" introduct="false" localName="" longname="福费延还款校验输入" extension="" tags="">
         <element id="fRFTGDueBillCd" longname="福费延借据编码" type="MBaseType.U_DAI_KUAN_JIE_JU_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.F.fRFTGDueBillCd"/>
         <element id="fncgBsnID" longname="融资业务编码" type="MBaseType.U_RONG_ZI_YE_WU_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.F.fncgBsnID"/>
@@ -202,12 +197,11 @@ package： com.spdb.ccbs.loan.resources.type.ft.repay
 
 | 规则 | 说明 | 强制等级 |
 |------|------|---------|
-| ⛔ 属性不换行 | `complexType` 和 `element` 的**所有属性必须写在同一行**，绝对不允许换行 | 强制 |
+| ⛔ 属性不换行 | **所有标签**（`schema`、`complexType`、`element`）的属性必须写在同一行，绝对不允许换行 | 强制 |
 | ⛔ 同级无空行 | 同级 `element` 之间、同级 `complexType` 之间**不允许有空行** | 强制 |
 | ⛔ 禁用 Tab | 只使用空格缩进，禁止任何 Tab 字符 | 强制 |
 | 子标签缩进 | 子标签相对父标签缩进 **4 个空格**（`complexType` = 4格，`element` = 8格） | 必须 |
 | 自闭合 | `element` 使用 `/>` 自闭合结尾 | 必须 |
-| schema 例外 | `schema` 标签属性**可以**多行，这是唯一的例外 | 允许 |
 
 每个 `element` 属性顺序：`id → longname → type → required → multi → range → array → final → override → allowSubType → key → [ref]`
 

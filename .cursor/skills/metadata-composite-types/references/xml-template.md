@@ -6,12 +6,7 @@
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        id="{SchemaId}"
-        package="{包路径}"
-        longname="{复合类型文件中文名}"
-        classgen="auto"
-        xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="{SchemaId}" package="{包路径}" longname="{复合类型文件中文名}" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <complexType abstract="false" dict="false" id="{对象英文名}" introduct="false" localName="" longname="{对象中文名}" extension="" tags="">
         <element id="{字段英文名}" longname="{字段中文名}" type="{字段类型}" required="{true|false}" multi="{true|false}" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="{字典引用}"/>
         <!-- 更多 element... -->
@@ -38,12 +33,7 @@
 ### 格式示例
 
 ```xml
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        id="FtAcctgType"
-        package="com.spdb.ccbs.loan.resources.type.ft.repay"
-        longname="福费延还款复合类型"
-        classgen="auto"
-        xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtAcctgType" package="com.spdb.ccbs.loan.resources.type.ft.repay" longname="福费延还款复合类型" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
 ```
 
 ---
@@ -184,10 +174,10 @@ id → longname → type → required → multi → range → array → final �
 
 ### 属性格式规则
 
-- `<complexType>` 和 `<element>` **所有属性必须在同一行内**，不得换行
+> ⛔ **所有标签（`schema`、`complexType`、`element`）的属性必须写在同一行，不得换行。**
+
 - 使用 4 个空格缩进，**禁用 Tab**
 - `<element>` 使用自闭合 `/>` 结尾
-- `<schema>` 标签属性可以多行（按自然换行即可）
 
 ### 完整格式示例
 
@@ -208,6 +198,12 @@ id → longname → type → required → multi → range → array → final �
 
 **错误** ❌（多种错误汇总）：
 ```xml
+<!-- ❌ schema 属性换行（同样禁止） -->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        id="FtAcctgType"
+        package="com.spdb.ccbs.loan.resources.type.ft.repay"
+        classgen="auto"/>
+
 <!-- ❌ element 属性换行 -->
 <element id="fRFTGDueBillCd"
          longname="福费延借据编码"
