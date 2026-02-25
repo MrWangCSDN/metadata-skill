@@ -162,18 +162,56 @@ package： com.spdb.ccbs.loan.resources.type.ft.repay
 
 ## 复合类型引用规则
 
-当一个 element 的类型是另一个复合类型时：
+### 识别方式
 
-- `type` 格式：`{SchemaId}.{ComplexTypeId}`
-- 不填写 `ref` 属性
-- 无需查询字典 MCP
-- `multi="false"` → 单个对象；`multi="true"` → 对象数组（List）
+用户在字段描述后标注「复合对象」时，表示该字段是对另一个复合类型的引用，例如：
 
-```xml
-<element id="lstSyndAgrmLoanQryOutPojo" longname="银团贷款出资份额信息" type="SyndAgrmLoanType.SysdAgrmLoanInfoPojo" required="false" multi="true" range="false" array="false" final="false" override="false" allowSubType="true" key="false"/>
+```
+保函收到撤销索偿（复合对象）
+保函收到撤销索偿（复合对象）  多值
 ```
 
-> ⛔ 注意：上方示例中所有属性必须写在同一行，不得换行。
+### 处理流程
+
+> ⛔ **强制流程：引用复合类型时必须先搜索文件，找不到则不写入 XML。**
+
+1. **搜索 c_schema.xml 文件** — 在当前模块的 `src/main/resources/type/` 目录（含子目录）下搜索所有 `*.c_schema.xml` 文件
+2. **匹配 complexType** — 在找到的文件中查找 `id` 与字段中文名或英文名匹配的 `complexType`
+3. **找到** → 使用 `{SchemaId}.{ComplexTypeId}` 格式填写 `type`，不填写 `ref`，不查 MCP
+4. **找不到** → **强制不写入 XML**，在反馈中提示「{字段中文名}（复合对象）未找到对应 c_schema.xml，已跳过」
+
+### multi 属性（单值 vs 多值）
+
+| 描述 | multi 值 | 含义 |
+|------|---------|------|
+| 未标注「多值」 | `false` | 单个对象 |
+| 标注「多值」 | `true` | 对象数组（List） |
+
+普通字段同理：标注「多值」时 `multi="true"`，否则默认 `false`。
+
+### element 属性规则
+
+- `type` = `{SchemaId}.{ComplexTypeId}`
+- `ref` 属性**不填写**
+- `multi` = `false`（单值）或 `true`（多值）
+- 其余属性与普通字段相同，**所有属性必须在同一行**
+
+```xml
+<!-- 单值引用 -->
+<element id="grntRcvCxlClmPojo" longname="保函收到撤销索偿" type="GuaranteeType.GrntRcvCxlClmPojo" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false"/>
+
+<!-- 多值引用（List） -->
+<element id="grntRcvCxlClmPojoList" longname="保函收到撤销索偿" type="GuaranteeType.GrntRcvCxlClmPojo" required="false" multi="true" range="false" array="false" final="false" override="false" allowSubType="true" key="false"/>
+```
+
+### 反馈格式
+
+```
+⚠️  以下复合对象引用未找到对应 c_schema.xml，已从 XML 中跳过（共 N 个）:
+  1. 保函收到撤销索偿（复合对象）← 在当前模块 type/ 目录下未找到匹配的 c_schema.xml
+
+💡 请确认该复合类型文件是否已创建，或提供正确的 SchemaId 后重新执行
+```
 
 ---
 
@@ -219,12 +257,14 @@ package： com.spdb.ccbs.loan.resources.type.ft.repay
   - 否 → 文件路径 = `{模块}/src/main/resources/type/{SchemaId}.c_schema.xml`，package = 领域基础包（不追加子路径）
   - 是 → 文件路径追加子目录，package 同步追加（`/` 转 `.`）
 - [ ] 整理 complexType 列表（每个对象的 id、longname、字段列表）
-- [ ] 区分普通字段（查 MCP）和复合类型引用字段（不查 MCP）
+- [ ] 区分三类字段：普通字段（查 MCP）、复合类型引用字段（搜索 c_schema.xml）、多值字段（multi=true）
 - [ ] 调用 `dict-mcp-server.getDictDefByLongNameList` 批量查询普通字段
 - [ ] ⛔ **强制过滤**：MCP 返回 null 的字段不写入 XML
-- [ ] 生成 XML：⛔ `complexType` 和 `element` 所有属性必须在同一行，不换行；同级标签无空行；子标签缩进 4 空格
+- [ ] ⛔ **复合类型引用**：在当前模块 `type/` 目录（含子目录）搜索对应 `*.c_schema.xml`；找到则引用，找不到则不写入 XML 并提示
+- [ ] 多值字段：标注「多值」的字段 `multi="true"`，否则 `multi="false"`
+- [ ] 生成 XML：⛔ 所有标签属性必须在同一行，不换行；同级标签无空行；子标签缩进 4 空格
 - [ ] 保存至确定的目标路径
-- [ ] 输出反馈（文件路径、package、写入字段数、排除字段列表）
+- [ ] 输出反馈（文件路径、package、写入字段数、MCP未贯标排除列表、复合引用未找到列表）
 
 ### 修改流程
 

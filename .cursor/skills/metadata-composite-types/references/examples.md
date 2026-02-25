@@ -157,3 +157,103 @@ unknownField → ❌ 返回 null（未贯标）
 | 修改某 complexType | `修改 {SchemaId} 中的 {ComplexTypeId}，{新增/删除/修改}字段 {字段描述}` |
 | 删除某 complexType | `删除 {SchemaId} 中的 {ComplexTypeId}` |
 | 删除整个文件 | `删除复合类型文件 {SchemaId}` |
+
+---
+
+## 示例 6：含复合对象引用和多值字段
+
+**用户输入**：
+```
+帮我新建 FtExtAcctgType 福费延外部记账复合类型，贷款领域
+
+FtExtAcctgPojo 福费延外部记账对象
+  币种代码
+  摘要编码
+  保函收到撤销索偿（复合对象）
+  S码
+```
+
+**处理流程**：
+
+1. `币种代码`、`摘要编码`、`S码` → 查 MCP 获取字段元数据
+2. `保函收到撤销索偿（复合对象）` → 在贷款领域模块 `loan-resources/src/main/resources/type/` 下搜索 `*.c_schema.xml`，查找包含 `longname="保函收到撤销索偿"` 的 `complexType`
+   - **找到**（假设在 `GuaranteeType.c_schema.xml` 中，complexType id 为 `GrntRcvCxlClmPojo`）→ 写入引用
+   - **找不到** → 不写入，反馈提示
+
+**生成的 XML（找到引用的情况）**：
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtExtAcctgType" package="com.spdb.ccbs.loan.resources.type" longname="福费延外部记账复合类型" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+    <complexType abstract="false" dict="false" id="FtExtAcctgPojo" introduct="false" localName="" longname="福费延外部记账对象" extension="" tags="">
+        <element id="crcyCd" longname="币种代码" type="MBaseType.U_BI_ZHONG_DAI_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.C.crcyCd"/>
+        <element id="abstractCd" longname="摘要编码" type="MBaseType.U_ZHI_YAO_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.A.abstractCd"/>
+        <element id="grntRcvCxlClmPojo" longname="保函收到撤销索偿" type="GuaranteeType.GrntRcvCxlClmPojo" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false"/>
+        <element id="sCd" longname="S码" type="MBaseType.U_S_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.S.sCd"/>
+    </complexType>
+</schema>
+```
+
+---
+
+## 示例 7：含多值字段（multi=true）
+
+**用户输入**：
+```
+帮我新建 FtExtAcctgType 福费延外部记账复合类型，贷款领域
+
+FtExtAcctgPojo 福费延外部记账对象
+  币种代码   多值
+  摘要编码
+  保函收到撤销索偿（复合对象）  多值
+  S码
+```
+
+**multi 处理规则**：
+- `币种代码 多值` → `multi="true"`（普通字段的 List）
+- `摘要编码` → `multi="false"`（单值，默认）
+- `保函收到撤销索偿（复合对象） 多值` → `multi="true"`（复合对象的 List）
+- `S码` → `multi="false"`
+
+**生成的 XML**：
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtExtAcctgType" package="com.spdb.ccbs.loan.resources.type" longname="福费延外部记账复合类型" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+    <complexType abstract="false" dict="false" id="FtExtAcctgPojo" introduct="false" localName="" longname="福费延外部记账对象" extension="" tags="">
+        <element id="crcyCd" longname="币种代码" type="MBaseType.U_BI_ZHONG_DAI_MA" required="false" multi="true" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.C.crcyCd"/>
+        <element id="abstractCd" longname="摘要编码" type="MBaseType.U_ZHI_YAO_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.A.abstractCd"/>
+        <element id="grntRcvCxlClmPojoList" longname="保函收到撤销索偿" type="GuaranteeType.GrntRcvCxlClmPojo" required="false" multi="true" range="false" array="false" final="false" override="false" allowSubType="true" key="false"/>
+        <element id="sCd" longname="S码" type="MBaseType.U_S_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.S.sCd"/>
+    </complexType>
+</schema>
+```
+
+**关键差异**：`multi="true"` 时，复合对象引用的 `id` 建议以 `List` 结尾（如 `grntRcvCxlClmPojoList`）以表明是集合类型。
+
+---
+
+## 示例 8：复合对象引用未找到
+
+**场景**：`保函收到撤销索偿（复合对象）` 在当前模块 `type/` 目录下未找到对应 `*.c_schema.xml`
+
+**生成的 XML**（跳过未找到的引用）：
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtExtAcctgType" package="com.spdb.ccbs.loan.resources.type" longname="福费延外部记账复合类型" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+    <complexType abstract="false" dict="false" id="FtExtAcctgPojo" introduct="false" localName="" longname="福费延外部记账对象" extension="" tags="">
+        <element id="crcyCd" longname="币种代码" type="MBaseType.U_BI_ZHONG_DAI_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.C.crcyCd"/>
+        <element id="abstractCd" longname="摘要编码" type="MBaseType.U_ZHI_YAO_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.A.abstractCd"/>
+        <element id="sCd" longname="S码" type="MBaseType.U_S_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.S.sCd"/>
+    </complexType>
+</schema>
+```
+
+**AI 反馈**：
+```
+⚠️  以下复合对象引用未找到对应 c_schema.xml，已从 XML 中跳过（共 1 个）:
+  1. 保函收到撤销索偿（复合对象）← 在 loan-resources/src/main/resources/type/ 下未找到匹配文件
+
+✅ 已写入字段（共 3 个）: 币种代码、摘要编码、S码
+📁 文件位置: loan-resources/src/main/resources/type/FtExtAcctgType.c_schema.xml
+
+💡 请确认 GuaranteeType.c_schema.xml 是否已创建，提供正确的 SchemaId 后重新执行
+```
