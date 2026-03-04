@@ -132,12 +132,15 @@
     <output asParm="true" packMode="true">
         ...
     </output>
+    <property packMode="true">
+        ...
+    </property>
 </interface>
 ```
 
 **缩进**: 
 - interface 标签: 4 个空格(第 1 层)
-- input/output: 8 个空格(第 2 层)
+- input/output/property: 8 个空格(第 2 层)
 - field/fields: 12 个空格(第 3 层)
 
 ## input 标签
@@ -171,6 +174,38 @@
     </fields>
 </output>
 ```
+
+## property 标签（属性接口）
+
+**属性**: `packMode="true"` (固定)，位于 output 标签之后
+
+**完整示例**（含普通字段和复合类型引用）：
+```xml
+<property packMode="true">
+    <field id="dkCxCkZhSrLst" type="LoanQueryType.DkCxCkZhSrIn" required="true" multi="true" longname="贷款查询存款账号输入列表"/>
+    <field id="dkCxGgZhScLst" type="LoanQueryType.DkCxGgZhSc" required="false" multi="false" longname="贷款查询公共账号输出列表"/>
+    <field id="queryCount" type="MBaseType.U_JI_SHU" required="false" multi="false" array="false" longname="查询笔数" ref="MDict.Q.queryCount"/>
+    <field id="avlBal" type="MBaseType.U_JIN_E" required="false" multi="false" array="false" longname="可用余额" ref="MDict.A.avlBal"/>
+</property>
+```
+
+### property 内 field 的两种格式
+
+**普通字段**（MCP 查询，含 array 和 ref）：
+```xml
+<field id="queryCount" type="MBaseType.U_JI_SHU" required="false" multi="false" array="false" longname="查询笔数" ref="MDict.Q.queryCount"/>
+```
+属性顺序：`id → type → required → multi → array → longname → ref`
+
+**复合类型引用字段**（`[xxx]` 语法，无 array，无 ref）：
+```xml
+<field id="dkCxCkZhSrLst" type="LoanQueryType.DkCxCkZhSrIn" required="true" multi="true" longname="贷款查询存款账号输入列表"/>
+```
+属性顺序：`id → type → required → multi → longname`
+
+> 复合类型引用通过调用 `find_composite_ref.py` 脚本获取 `type`，不查 MCP。
+
+---
 
 ## field 标签 (普通字段)
 
@@ -319,8 +354,8 @@ def generate_flowtran_xml(trans_data):
 | flowtran | 0 | 0 | `<flowtran ...>` |
 | description | 1 | 4 | `    <description>` |
 | interface | 1 | 4 | `    <interface>` |
-| input/output | 2 | 8 | `        <input>` |
-| field (input/output 内) | 3 | 12 | `            <field .../>` |
+| input/output/property | 2 | 8 | `        <input>` |
+| field (input/output/property 内) | 3 | 12 | `            <field .../>` |
 | fields (数组) | 3 | 12 | `            <fields>` |
 | field (fields 内) | 4 | 16 | `                <field .../>` |
 

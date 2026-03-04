@@ -293,6 +293,139 @@ totalCount  总记录数
 | flowtran/interface/input/fields | 3 | 12 | `            <fields>` |
 | flowtran/interface/input/fields/field | 4 | 16 | `                <field>` |
 
+## 示例 7: 含属性接口（property）的交易
+
+**用户输入**：
+```
+帮我新建 TD300 贷款账号综合查询 的联机交易
+
+输入:
+custId   客户ID   必输
+queryDate 查询日期
+
+输出:
+custName  客户名称
+totalCount 总记录数
+
+属性接口：
+[贷款查询存款账号输入列表]  多值  必输
+[贷款查询公共账号输出列表]
+查询笔数
+可用余额
+```
+
+**字段分类处理**：
+
+1. **input**（`custId`、`queryDate`）→ 查 MCP
+2. **output**（`custName`、`totalCount`）→ 查 MCP
+3. **property 中 `[贷款查询存款账号输入列表]`** → 调用脚本：
+   ```bash
+   python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}/loan-resources/src/main/resources/type" 贷款查询存款账号输入列表
+   ```
+   - 找到：`type=LoanQueryType.DkCxCkZhSrIn`，多值 → `multi="true"`，必输 → `required="true"`
+   - id：无英文名 + 多值 → 取 complexTypeId 首字母小写 + `List` = `dkCxCkZhSrInList`
+4. **property 中 `[贷款查询公共账号输出列表]`** → 调用脚本搜索，单值
+5. **property 中 `查询笔数`、`可用余额`** → 查 MCP（普通字段）
+
+**工作台展示**：
+```
+📋 MCP 字段查询结果：
+  ✅ 客户ID     →  type=MBaseType.U_KE_HU_BIAN_HAO  ref=MDict.C.custId
+  ✅ 查询日期   →  type=MBaseType.U_RI_QI  ref=MDict.Q.queryDate
+  ✅ 客户名称   →  type=MBaseType.U_KE_HU_MING_CHENG  ref=MDict.C.custName
+  ✅ 总记录数   →  type=MBaseType.U_JI_SHU  ref=MDict.T.totalCount
+  ✅ 查询笔数   →  type=MBaseType.U_JI_SHU  ref=MDict.Q.queryCount
+  ❌ 可用余额   →  未贯标（MCP 返回 null），已跳过
+
+🔍 复合对象引用搜索结果（property）：
+  ✅ [贷款查询存款账号输入列表]  →  LoanQueryType.DkCxCkZhSrIn
+  ✅ [贷款查询公共账号输出列表]  →  LoanQueryType.DkCxGgZhSc
+```
+
+**生成的 XML**：
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<flowtran xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="TD300" longname="贷款账号综合查询" kind="auto" package="com.spdb.ccbs.loan.pbf.trans" txnMode="A" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+    <description><![CDATA[贷款账号综合查询]]></description>
+    <interface package="com.spdb.ccbs.loan.pbf.trans.intf">
+        <input packMode="true">
+            <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" required="true" multi="false" array="false" longname="客户ID" ref="MDict.C.custId"/>
+            <field id="queryDate" type="MBaseType.U_RI_QI" required="false" multi="false" array="false" longname="查询日期" ref="MDict.Q.queryDate"/>
+        </input>
+        <output asParm="true" packMode="true">
+            <field id="custName" type="MBaseType.U_KE_HU_MING_CHENG" required="false" multi="false" array="false" longname="客户名称" ref="MDict.C.custName"/>
+            <field id="totalCount" type="MBaseType.U_JI_SHU" required="false" multi="false" array="false" longname="总记录数" ref="MDict.T.totalCount"/>
+        </output>
+        <property packMode="true">
+            <field id="dkCxCkZhSrInList" type="LoanQueryType.DkCxCkZhSrIn" required="true" multi="true" longname="贷款查询存款账号输入列表"/>
+            <field id="dkCxGgZhSc" type="LoanQueryType.DkCxGgZhSc" required="false" multi="false" longname="贷款查询公共账号输出列表"/>
+            <field id="queryCount" type="MBaseType.U_JI_SHU" required="false" multi="false" array="false" longname="查询笔数" ref="MDict.Q.queryCount"/>
+        </property>
+    </interface>
+</flowtran>
+```
+
+**最终汇总提示**：
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️  以下字段未写入 XML，请确认后补充：
+
+【未贯标字段】（MCP 返回 null，需完成贯标后重新执行）：
+  1. 可用余额（property）
+
+💡 完成上述问题后，可重新执行以补充这些字段。
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+**关键说明**：
+- `[贷款查询存款账号输入列表]  多值  必输` → 复合引用 field，无 `array`，无 `ref`，`required="true"`, `multi="true"`
+- `[贷款查询公共账号输出列表]` → 单值复合引用，`multi="false"`，id 取 complexTypeId 首字母小写
+- `查询笔数`、`可用余额` → 普通字段，查 MCP；`可用余额` 未贯标则跳过
+- property 在 output 之后
+
+---
+
+## 示例 8: property 中复合引用未找到
+
+**场景**：property 中的 `[贷款查询存款账号输入列表]` 在 `loan-resources` 目录下未找到对应 `*.c_schema.xml`
+
+**脚本返回**：
+```json
+{
+  "found": false,
+  "message": "在 loan-resources/src/main/resources/type 下未找到 longname='贷款查询存款账号输入列表' 的 complexType（共扫描 8 个文件）"
+}
+```
+
+**工作台立即输出**：
+```
+🔍 复合对象引用搜索结果（property）：
+  ❌ [贷款查询存款账号输入列表]  →  未找到匹配的 c_schema.xml，已跳过
+  ✅ [贷款查询公共账号输出列表]  →  LoanQueryType.DkCxGgZhSc
+```
+
+**生成的 XML**（未找到的引用不写入）：
+```xml
+<property packMode="true">
+    <field id="dkCxGgZhSc" type="LoanQueryType.DkCxGgZhSc" required="false" multi="false" longname="贷款查询公共账号输出列表"/>
+    <field id="queryCount" type="MBaseType.U_JI_SHU" required="false" multi="false" array="false" longname="查询笔数" ref="MDict.Q.queryCount"/>
+</property>
+```
+
+**最终汇总提示**：
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️  以下字段未写入 XML，请确认后补充：
+
+【property 复合对象引用未找到】（需确认 c_schema.xml 是否已创建）：
+  1. [贷款查询存款账号输入列表]
+
+💡 确认文件已创建后，可重新执行以补充这些字段。
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
 ## 快速参考
 
 ### XML 格式清单
@@ -300,11 +433,12 @@ totalCount  总记录数
 - [ ] 所有属性在一行内
 - [ ] 标签之间无空行
 - [ ] flowtran 子标签缩进 4 个空格
-- [ ] interface 子标签缩进 8 个空格  
-- [ ] input/output 子标签缩进 12 个空格
+- [ ] interface 子标签缩进 8 个空格
+- [ ] input/output/property 子标签缩进 12 个空格
 - [ ] fields 内 field 缩进 16 个空格
 - [ ] 使用空格不是 Tab
 - [ ] 同层级标签对齐
+- [ ] property 中复合引用 field：无 array，无 ref；普通字段：有 array，有 ref
 
 ### 创建命令模板
 
@@ -316,4 +450,8 @@ totalCount  总记录数
 
 输出:
 {字段} {中文名}
+
+属性接口：
+[{引用复合对象中文名}]  {多值}  {必输}
+{普通字段中文名}
 ```

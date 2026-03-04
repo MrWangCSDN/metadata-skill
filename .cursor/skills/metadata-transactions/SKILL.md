@@ -1,6 +1,6 @@
 ---
 name: metadata-transactions
-description: 处理基于 XML 的 flowtran 联机交易元数据模型的创建和修改。支持根据交易码（TC/TD/TG/TY 格式）、输入输出字段自动生成完整的 .flowtrans.xml 文件，包括数组字段处理（fields 标签）、dict-mcp-server 服务集成进行字段元数据查询、自动包路径生成和模块路径定位。触发场景：新建/创建/修改 flowtran 联机交易、TC/TD/TG/TY 开头的交易码、.flowtrans.xml 文件操作。
+description: 处理基于 XML 的 flowtran 联机交易元数据模型的创建和修改。支持根据交易码（TC/TD/TG/TY 格式）、输入输出字段自动生成完整的 .flowtrans.xml 文件，包括数组字段处理（fields 标签）、属性接口（property 标签）、复合类型引用（[xxx] 语法）、dict-mcp-server 服务集成进行字段元数据查询、自动包路径生成和模块路径定位。触发场景：新建/创建/修改 flowtran 联机交易、TC/TD/TG/TY 开头的交易码、.flowtrans.xml 文件操作。
 ---
 
 # Flowtran 联机交易元数据
@@ -100,6 +100,10 @@ description: 处理基于 XML 的 flowtran 联机交易元数据模型的创建�
         <output asParm="true" packMode="true">
             <field id="cst" type="MBaseType.U_GUO_JIA" required="false" multi="false" array="false" longname="国家" ref="MDict.C.cst"/>
         </output>
+        <property packMode="true">
+            <field id="dkCxCkZhSrLst" type="LoanQueryType.DkCxCkZhSrIn" required="true" multi="true" longname="贷款查询存款账号输入列表"/>
+            <field id="queryCount" type="MBaseType.U_JI_SHU" required="false" multi="false" array="false" longname="查询笔数" ref="MDict.Q.queryCount"/>
+        </property>
     </interface>
 </flowtran>
 ```
@@ -114,10 +118,104 @@ description: 处理基于 XML 的 flowtran 联机交易元数据模型的创建�
 | kind | 固定为 `"auto"` |
 | txnMode | 默认 `A`，只读查询用 `R` |
 | output | `asParm="true"` 和 `packMode="true"` 均固定 |
+| property | `packMode="true"` 固定；位于 output 之后（如有） |
 
-缩进层级：`flowtran(0)` → `description/interface(4)` → `input/output(8)` → `field(12)` → `fields内field(16)`
+缩进层级：`flowtran(0)` → `description/interface(4)` → `input/output/property(8)` → `field(12)` → `fields内field(16)`
 
 完整模板说明见 [references/xml-template.md](references/xml-template.md)
+
+---
+
+## 属性接口（property）
+
+### 触发识别
+
+用户输入中出现「属性接口：」关键词时，表示存在 `property` 标签。
+
+**完整语法对照表**（大模型按此表逐行匹配解析）：
+
+```
+属性接口中的输入写法                          → 解析结果
+──────────────────────────────────────────────────────────────────
+[贷款查询存款账号输入列表]                    → 复合引用，单值，id 自动生成，无 array/ref
+[贷款查询存款账号输入列表]  多值              → 复合引用，multi=true，id 末尾加 List
+[贷款查询存款账号输入列表]  必输              → 复合引用，required=true
+[贷款查询存款账号输入列表]  多值  必输        → 复合引用，multi=true，required=true，id 末尾加 List
+lstXxx [贷款查询存款账号输入列表]             → 复合引用，id = lstXxx（用户指定，不追加 List）
+lstXxx [贷款查询存款账号输入列表]  多值  必输 → 复合引用，id = lstXxx，multi=true，required=true
+查询笔数                                      → 普通字段，查 MCP，生成含 array/ref 的 field
+查询笔数  必输                                → 普通字段，查 MCP，required=true
+查询笔数  多值                                → 普通字段，查 MCP，multi=true
+```
+
+> **关键判断**：一行中有 `[...]` → 复合引用（调脚本，无 array/ref）；否则 → 普通字段（查 MCP，有 array/ref）。
+
+### 字段分类与处理规则
+
+| 字段类型 | 识别方式 | 处理方式 | 生成格式 |
+|---------|---------|---------|---------|
+| 复合类型引用 | `[中文名]` 中括号 | 调用 `find_composite_ref.py` 脚本 | 无 `array`、无 `ref` |
+| 普通字段 | 普通中文名 | 调用 MCP 查询 | 同 input/output 格式 |
+
+### 复合类型引用字段（[xxx] 语法）
+
+> ⛔ **强制规则：`[xxx]` 引用必须调用 `find_composite_ref.py` 脚本搜索，不得自行猜测 type。**
+
+**脚本调用（使用工作区绝对路径，python 命令）**：
+```bash
+python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}/{领域}-resources/src/main/resources/type" 贷款查询存款账号输入列表
+```
+
+**找到时**，生成（无 `array`、无 `ref` 属性）：
+```xml
+<field id="dkCxCkZhSrLst" type="LoanQueryType.DkCxCkZhSrIn" required="true" multi="true" longname="贷款查询存款账号输入列表"/>
+```
+
+**未找到时（⛔ 强制规则）**：
+
+1. **XML 中不写入该 field**，该引用完全跳过
+2. **立即在工作台输出**：
+   ```
+   ❌ [贷款查询存款账号输入列表] → 未找到匹配的 c_schema.xml，已跳过
+   ```
+3. **生成 XML 后在汇总框中统一提示**：
+   ```
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ⚠️  以下字段未写入 XML，请确认后补充：
+
+   【property 复合对象引用未找到】（需确认 c_schema.xml 是否已创建）：
+     1. [贷款查询存款账号输入列表]
+
+   💡 确认文件已创建后，可重新执行以补充这些字段。
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ```
+
+**多个匹配时**：在工作台列出所有候选，询问用户选择哪一个后再继续生成。
+
+**id 生成规则**（与复合类型 skill 一致）：
+
+| 用户输入 | id 取值 |
+|---------|---------|
+| 中括号前有英文名（`lstXxx [中文名]`） | 直接使用英文名 |
+| 无英文名 | 脚本返回 complexTypeId 首字母改小写 |
+| 无英文名 + 多值 | 首字母小写 + `List` 后缀 |
+
+### 普通字段
+
+与 input/output 中普通字段处理完全相同：调用 MCP，生成含 `array="false"` 和 `ref` 的完整 `field` 标签。
+
+### 生成的 property 标签
+
+```xml
+<property packMode="true">
+    <field id="dkCxCkZhSrLst" type="LoanQueryType.DkCxCkZhSrIn" required="true" multi="true" longname="贷款查询存款账号输入列表"/>
+    <field id="dkCxGgZhScLst" type="LoanQueryType.DkCxGgZhSc" required="false" multi="false" longname="贷款查询公共账号输出列表"/>
+    <field id="queryCount" type="MBaseType.U_JI_SHU" required="false" multi="false" array="false" longname="查询笔数" ref="MDict.Q.queryCount"/>
+    <field id="avlBal" type="MBaseType.U_JIN_E" required="false" multi="false" array="false" longname="可用余额" ref="MDict.A.avlBal"/>
+</property>
+```
+
+> property 标签位于 `output` 标签之后（如无 output 则紧接 input 之后）。
 
 ---
 
@@ -169,11 +267,13 @@ chargCdArray 收费代码数组 end
 - [ ] 确定模块和包路径（根据前缀映射）
 - [ ] 检查 `.flowtrans.xml` 是否已存在（存在则切换修改模式）
 - [ ] 处理子目录（如有，追加到路径和包名）
-- [ ] 调用 `dict-mcp-server.getDictDefByLongNameList` 批量查询
+- [ ] 识别三类内容：input 输入接口、output 输出接口、property 属性接口
+- [ ] 调用 `dict-mcp-server.getDictDefByLongNameList` 批量查询所有普通字段（含 property 中的普通字段）
 - [ ] **强制过滤**：将 MCP 返回 null 的字段从字段列表中移除，不得写入 XML
 - [ ] 处理数组字段（识别 start/end 标记；子字段全为 null 则整个 fields 标签不写入）
-- [ ] 生成 XML（仅已贯标字段，属性单行，无空行，4空格缩进）
-- [ ] 收集所有被排除字段，在反馈中统一提示
+- [ ] ⛔ **property 中的复合类型引用**：对每个 `[中文名]`，调用 `python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{搜索目录绝对路径}" 中文名`；**找到** → 生成无 array/ref 的 field；**未找到** → 立即工作台输出 `❌ [xxx] → 未找到...`，XML 中不写入，计入汇总提示；**多匹配** → 工作台询问用户
+- [ ] 生成 XML（仅已贯标字段，属性单行，无空行，4空格缩进；property 在 output 之后）
+- [ ] 收集所有被排除字段，在反馈中统一提示（MCP未贯标 + 复合引用未找到）
 - [ ] 保存至 `{模块}-pbf/src/main/resources/trans/`
 - [ ] 输出反馈摘要
 
@@ -181,8 +281,8 @@ chargCdArray 收费代码数组 end
 
 - [ ] 定位现有 `.flowtrans.xml`（含子目录搜索）
 - [ ] 读取并保留 `flowtran`/`description`/`interface` 标签属性
-- [ ] 调用 MCP 查询新字段
-- [ ] 仅覆盖 `input` 和 `output` 标签内容
+- [ ] 调用 MCP 查询新字段；property 中 `[xxx]` 调用脚本搜索
+- [ ] 覆盖 `input`、`output`、`property` 标签内容（原文件有 property 则更新，用户新增则追加）
 - [ ] 保持 XML 格式一致（属性单行，无空行）
 
 ---
