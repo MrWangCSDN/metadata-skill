@@ -1,31 +1,58 @@
 # 表定义 XML 模板详解
 
-## 完整 XML 模板
+## 按需生成原则（⛔ 强制）
+
+> **只生成用户明确指定的部分，不擅自补充未提及的内容。**
+
+| 用户输入 | 生成部分 | 未提及时 |
+|---------|---------|---------|
+| 字段列表（「字段：」） | `<fields>` | 不生成 `<fields>` 标签 |
+| ODB 索引（「ODB索引：」） | `<odbindexes>` | 不生成 `<odbindexes>` 标签 |
+| 物理索引（「物理索引：」/「DB索引：」） | `<indexes>` | 不生成 `<indexes>` 标签 |
+
+## 最完整 XML 模板（用户同时指定了字段 + ODB 索引 + 物理索引）
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Loan_acct_table" package="com.spdb.ccbs.loan.bcc.tables" longname="贷款账户表" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <table id="loan_acct_table" name="loan_acct_table" longname="贷款账户表" extension="SysCommFieldTable.kapp_sys_genl_pub_fld">
         <fields>
-            <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" nullable="false" ref="MDict.C.custId" primarykey="true" final="false" identity="false" allowSubType="true" dbname="CUST_ID"/>
-            <field id="acctNo" type="MBaseType.U_ZHANG_HAO" nullable="false" ref="MDict.A.acctNo" primarykey="true" final="false" identity="false" allowSubType="true" dbname="ACCT_NO"/>
-            <field id="acctBal" type="MBaseType.U_JIN_E" nullable="true" ref="MDict.A.acctBal" primarykey="false" final="false" identity="false" allowSubType="true" dbname="ACCT_BAL"/>
-            <field id="crcyCd" type="MBaseType.U_BI_ZHONG_DAI_MA" nullable="true" ref="MDict.C.crcyCd" primarykey="false" final="false" identity="false" allowSubType="true" default="CNY" dbname="CRCY_CD"/>
+            <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" nullable="false" ref="MDict.C.custId" primarykey="true" final="false" identity="false" allowSubType="true" dbname="cust_id"/>
+            <field id="acctNo" type="MBaseType.U_ZHANG_HAO" nullable="false" ref="MDict.A.acctNo" primarykey="true" final="false" identity="false" allowSubType="true" dbname="acct_no"/>
+            <field id="acctBal" type="MBaseType.U_JIN_E" nullable="true" ref="MDict.A.acctBal" primarykey="false" final="false" identity="false" allowSubType="true" dbname="acct_bal"/>
+            <field id="crcyCd" type="MBaseType.U_BI_ZHONG_DAI_MA" nullable="true" ref="MDict.C.crcyCd" primarykey="false" final="false" identity="false" allowSubType="true" default="CNY" dbname="crcy_cd"/>
         </fields>
         <odbindexes>
             <index id="selectByCustIdAndAcctNo" type="unique" fields="custId acctNo" operate="selectOne deleteOne updateOne selectOneWithLock"/>
             <index id="selectByCustId" type="index" fields="custId" operate="selectAll selectPage"/>
         </odbindexes>
         <indexes>
-            <index id="PK_LOAN_ACCT" type="primarykey" fields="CUST_ID ACCT_NO"/>
-            <index id="IDX_LOAN_ACCT_01" type="index" fields="CUST_ID"/>
+            <index id="PK_LOAN_ACCT" type="primarykey" fields="cust_id acct_no"/>
+            <index id="IDX_LOAN_ACCT_01" type="index" fields="cust_id"/>
         </indexes>
     </table>
 </schema>
 ```
 
+## 仅字段的 XML 模板（用户只指定了字段，未提及索引）
+
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Loan_acct_table" package="com.spdb.ccbs.loan.bcc.tables" longname="贷款账户表" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+    <table id="loan_acct_table" name="loan_acct_table" longname="贷款账户表" extension="SysCommFieldTable.kapp_sys_genl_pub_fld">
+        <fields>
+            <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" nullable="false" ref="MDict.C.custId" primarykey="true" final="false" identity="false" allowSubType="true" dbname="cust_id"/>
+            <field id="acctBal" type="MBaseType.U_JIN_E" nullable="true" ref="MDict.A.acctBal" primarykey="false" final="false" identity="false" allowSubType="true" dbname="acct_bal"/>
+        </fields>
+    </table>
+</schema>
+```
+
+> ⛔ 用户未提及 ODB 索引和物理索引，**不生成** `<odbindexes>` 和 `<indexes>` 标签。
+
 ## 格式强制规则
 
+- ⛔ **按需生成**：只生成用户明确指定的部分，不擅自补充
 - ⛔ **单文件单表**：1 个 XML 文件中只能有 1 个 `<table>` 标签，不允许多张表
 - ⛔ **属性不换行**：所有标签的属性必须写在同一行，绝对不允许换行
 - ⛔ **无空行**：不同标签之间不能有空行，紧密排列
@@ -73,18 +100,18 @@
 
 属性顺序：`id → name → longname → extension`
 
-## field 标签
+## field 标签（仅用户指定字段时生成）
 
 ### 普通字段（无 default）
 
 ```xml
-<field id="acctBal" type="MBaseType.U_JIN_E" nullable="true" ref="MDict.A.acctBal" primarykey="false" final="false" identity="false" allowSubType="true" dbname="ACCT_BAL"/>
+<field id="acctBal" type="MBaseType.U_JIN_E" nullable="true" ref="MDict.A.acctBal" primarykey="false" final="false" identity="false" allowSubType="true" dbname="acct_bal"/>
 ```
 
 ### 主键字段
 
 ```xml
-<field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" nullable="false" ref="MDict.C.custId" primarykey="true" final="false" identity="false" allowSubType="true" dbname="CUST_ID"/>
+<field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" nullable="false" ref="MDict.C.custId" primarykey="true" final="false" identity="false" allowSubType="true" dbname="cust_id"/>
 ```
 
 > 主键字段 `primarykey="true"` + `nullable="false"`（强制）
@@ -92,7 +119,7 @@
 ### 带默认值字段
 
 ```xml
-<field id="crcyCd" type="MBaseType.U_BI_ZHONG_DAI_MA" nullable="true" ref="MDict.C.crcyCd" primarykey="false" final="false" identity="false" allowSubType="true" default="CNY" dbname="CRCY_CD"/>
+<field id="crcyCd" type="MBaseType.U_BI_ZHONG_DAI_MA" nullable="true" ref="MDict.C.crcyCd" primarykey="false" final="false" identity="false" allowSubType="true" default="CNY" dbname="crcy_cd"/>
 ```
 
 > `default` 属性仅在用户指定时出现，位于 `allowSubType` 之后、`dbname` 之前。
@@ -116,7 +143,7 @@ id → type → nullable → ref → primarykey → final → identity → allow
 | `default` | 用户指定时才有 | — |
 | `dbname` | MCP 返回 | — |
 
-## ODB 索引标签（odbindexes）
+## ODB 索引标签（仅用户指定 ODB 索引时生成）
 
 ```xml
 <odbindexes>
@@ -129,7 +156,7 @@ id → type → nullable → ref → primarykey → final → identity → allow
 |------|------|
 | `id` | 用户指定的索引 id |
 | `type` | `unique` 或 `index` |
-| `fields` | MCP 返回的 **id** 值，多个空格分隔 |
+| `fields` | MCP 返回的 **id** 值（驼峰），多个空格分隔 |
 | `operate` | 操作方法列表，多个空格分隔 |
 
 index 属性顺序：`id → type → fields → operate`
@@ -156,12 +183,12 @@ index 属性顺序：`id → type → fields → operate`
 | 带总记录数的翻页查询 | `selectPageWithCount` |
 | 批量更新 | `updateBatch` |
 
-## 物理索引标签（indexes）
+## 物理索引标签（仅用户指定物理索引/DB索引时生成）
 
 ```xml
 <indexes>
-    <index id="PK_LOAN_ACCT" type="primarykey" fields="CUST_ID ACCT_NO"/>
-    <index id="IDX_LOAN_ACCT_01" type="index" fields="CUST_ID"/>
+    <index id="PK_LOAN_ACCT" type="primarykey" fields="cust_id acct_no"/>
+    <index id="IDX_LOAN_ACCT_01" type="index" fields="cust_id"/>
 </indexes>
 ```
 
@@ -169,7 +196,7 @@ index 属性顺序：`id → type → fields → operate`
 |------|------|
 | `id` | 用户指定的索引 id |
 | `type` | `primarykey`、`unique` 或 `index` |
-| `fields` | MCP 返回的 **dbname** 值，多个空格分隔 |
+| `fields` | MCP 返回的 **dbname** 值（小写），多个空格分隔 |
 
 > 物理索引**无 operate 属性**。
 
@@ -179,7 +206,9 @@ index 属性顺序：`id → type → fields`
 
 | 对比项 | ODB 索引 | 物理索引 |
 |--------|---------|---------|
+| 触发条件 | 用户输入含「ODB索引：」 | 用户输入含「物理索引：」或「DB索引：」 |
 | 外层标签 | `<odbindexes>` | `<indexes>` |
-| fields 取值 | MCP 返回的 **id** | MCP 返回的 **dbname** |
+| fields 取值 | MCP 返回的 **id**（驼峰） | MCP 返回的 **dbname**（小写） |
 | type 可选值 | `unique`、`index` | `primarykey`、`unique`、`index` |
 | operate 属性 | ✅ 有 | ❌ 无 |
+| 用户未指定时 | ⛔ 不生成 | ⛔ 不生成 |
