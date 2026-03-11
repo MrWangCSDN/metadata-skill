@@ -20,7 +20,7 @@ FtAcctRepayChkOutPojo 福费延还款校验输出
 **生成的 XML**：
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtAcctgType" package="com.spdb.ccbs.loan.resources.type.ft.repay" longname="福费延还款复合类型" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtAcctgType" package="com.spdb.ccbs.loan.resources.type.ft.repay" longname="福费延还款复合类型" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <complexType abstract="false" dict="false" id="FtAcctRepayChkInPojo" introduct="false" localName="" longname="福费延还款校验输入" extension="" tags="">
         <element id="fRFTGDueBillCd" longname="福费延借据编码" type="MBaseType.U_DAI_KUAN_JIE_JU_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.F.fRFTGDueBillCd"/>
         <element id="fncgBsnID" longname="融资业务编码" type="MBaseType.U_RONG_ZI_YE_WU_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.F.fncgBsnID"/>
@@ -60,7 +60,7 @@ SyndAgrmLoanQryOutPojo 银团贷款协议查询输出
 **生成的 XML**：
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="SyndAgrmLoanType" package="com.spdb.ccbs.loan.resources.type.synd" longname="银团贷款协议复合类型" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="SyndAgrmLoanType" package="com.spdb.ccbs.loan.resources.type.synd" longname="银团贷款协议复合类型" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <complexType abstract="false" dict="false" id="SyndAgrmLoanQryOutPojo" introduct="false" localName="" longname="银团贷款协议查询输出" extension="" tags="">
         <element id="custId" longname="客户ID" type="MBaseType.U_KE_HU_BIAN_HAO" required="true" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.C.custId"/>
         <element id="lstSyndAgrmLoanInfoPojo" longname="银团贷款出资份额信息" type="SyndAgrmLoanType.SyndAgrmLoanInfoPojo" required="false" multi="true" range="false" array="false" final="false" override="false" allowSubType="true" key="false"/>
@@ -99,7 +99,7 @@ ObDealQryOutPojo 交易查询输出
 **生成的 XML**：
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="ObDealType" package="com.spdb.ccbs.sett.resources.type" longname="交易处理复合类型" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="ObDealType" package="com.spdb.ccbs.sett.resources.type" longname="交易处理复合类型" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <complexType abstract="false" dict="false" id="ObDealQryOutPojo" introduct="false" localName="" longname="交易查询输出" extension="" tags="">
         <element id="obCstSetl" longname="结算信息输出" type="ObDealTpMgmtType.ObCstSetl" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false"/>
         <element id="obCstSetlList" longname="结算信息输出" type="ObDealTpMgmtType.ObCstSetl" required="false" multi="true" range="false" array="false" final="false" override="false" allowSubType="true" key="false"/>
@@ -135,7 +135,7 @@ unknownField → ❌ 返回 null（未贯标）
 **生成的 XML**（未贯标字段强制排除）：
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="CustInfoType" package="com.spdb.ccbs.comm.resources.type.cust" longname="客户信息复合类型" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="CustInfoType" package="com.spdb.ccbs.comm.resources.type.cust" longname="客户信息复合类型" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <complexType abstract="false" dict="false" id="CustBaseInfoPojo" introduct="false" localName="" longname="客户基础信息" extension="" tags="">
         <element id="custId" longname="客户ID" type="MBaseType.U_KE_HU_BIAN_HAO" required="true" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.C.custId"/>
         <element id="custName" longname="客户名称" type="MBaseType.U_KE_HU_MING_CHENG" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.C.custName"/>
@@ -242,7 +242,7 @@ FtExtAcctgPojo 福费延外部记账对象
 **生成的 XML（找到引用的情况）**：
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtExtAcctgType" package="com.spdb.ccbs.loan.resources.type" longname="福费延外部记账复合类型" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtExtAcctgType" package="com.spdb.ccbs.loan.resources.type" longname="福费延外部记账复合类型" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <complexType abstract="false" dict="false" id="FtExtAcctgPojo" introduct="false" localName="" longname="福费延外部记账对象" extension="" tags="">
         <element id="crcyCd" longname="币种代码" type="MBaseType.U_BI_ZHONG_DAI_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.C.crcyCd"/>
         <element id="abstractCd" longname="摘要编码" type="MBaseType.U_ZHI_YAO_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.A.abstractCd"/>
@@ -276,7 +276,7 @@ FtExtAcctgPojo 福费延外部记账对象
 **生成的 XML**：
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtExtAcctgType" package="com.spdb.ccbs.loan.resources.type" longname="福费延外部记账复合类型" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtExtAcctgType" package="com.spdb.ccbs.loan.resources.type" longname="福费延外部记账复合类型" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <complexType abstract="false" dict="false" id="FtExtAcctgPojo" introduct="false" localName="" longname="福费延外部记账对象" extension="" tags="">
         <element id="crcyCd" longname="币种代码" type="MBaseType.U_BI_ZHONG_DAI_MA" required="false" multi="true" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.C.crcyCd"/>
         <element id="abstractCd" longname="摘要编码" type="MBaseType.U_ZHI_YAO_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.A.abstractCd"/>
@@ -310,7 +310,7 @@ python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/script
 **生成的 XML**（跳过未找到的引用）：
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtExtAcctgType" package="com.spdb.ccbs.loan.resources.type" longname="福费延外部记账复合类型" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtExtAcctgType" package="com.spdb.ccbs.loan.resources.type" longname="福费延外部记账复合类型" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <complexType abstract="false" dict="false" id="FtExtAcctgPojo" introduct="false" localName="" longname="福费延外部记账对象" extension="" tags="">
         <element id="crcyCd" longname="币种代码" type="MBaseType.U_BI_ZHONG_DAI_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.C.crcyCd"/>
         <element id="abstractCd" longname="摘要编码" type="MBaseType.U_ZHI_YAO_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.A.abstractCd"/>
@@ -385,7 +385,7 @@ python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/script
 **生成的 XML**（`钞汇代码` 未贯标跳过，`[保函收到撤销索偿]` 找到并写入）：
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="AbsTestType" package="com.spdb.ccbs.loan.resources.type" longname="测试复合类型" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="AbsTestType" package="com.spdb.ccbs.loan.resources.type" longname="测试复合类型" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <complexType abstract="false" dict="false" id="FtInternalAcctgPojo" introduct="false" localName="" longname="福费延内部记账对象" extension="" tags="">
         <element id="jyDfhh" longname="交易对方行号" type="MBaseType.U_JIAO_YI_DUI_FANG_HANG_HAO" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.J.jyDfhh"/>
         <element id="jyDfhm" longname="交易对方行名" type="MBaseType.U_JIAO_YI_DUI_FANG_HANG_MING" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.J.jyDfhm"/>

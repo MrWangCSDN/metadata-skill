@@ -26,23 +26,23 @@ ccbs-{领域}-impl/
 
 | 领域 | 文件路径 | package |
 |------|---------|---------|
-| 存款 | `dept-bcc/src/main/resources/tables/{SchemaId}.tables.xml` | `com.spdb.ccbs.dept.bcc.tables` |
-| 贷款 | `loan-bcc/src/main/resources/tables/{SchemaId}.tables.xml` | `com.spdb.ccbs.loan.bcc.tables` |
-| 结算 | `sett-bcc/src/main/resources/tables/{SchemaId}.tables.xml` | `com.spdb.ccbs.sett.bcc.tables` |
-| 平台公共 | `comm-bcc/src/main/resources/tables/{SchemaId}.tables.xml` | `com.spdb.ccbs.comm.bcc.tables` |
+| 存款 | `src/main/resources/tables/{SchemaId}.tables.xml` | `com.spdb.ccbs.dept.bcc.tables` |
+| 贷款 | `src/main/resources/tables/{SchemaId}.tables.xml` | `com.spdb.ccbs.loan.bcc.tables` |
+| 结算 | `src/main/resources/tables/{SchemaId}.tables.xml` | `com.spdb.ccbs.sett.bcc.tables` |
+| 平台公共 | `src/main/resources/tables/{SchemaId}.tables.xml` | `com.spdb.ccbs.comm.bcc.tables` |
 
 ## 指定子目录
 
 ```
-文件路径：{领域}-bcc/src/main/resources/tables/{子目录}/{SchemaId}.tables.xml
+文件路径：src/main/resources/tables/{子目录}/{SchemaId}.tables.xml
 package： com.spdb.ccbs.{领域}.bcc.tables.{子目录（/转.）}
 ```
 
 | 子目录 | 文件路径示例 | package |
 |--------|------------|---------|
-| `ft` | `loan-bcc/src/main/resources/tables/ft/Ft_acct_table.tables.xml` | `com.spdb.ccbs.loan.bcc.tables.ft` |
-| `ft/repay` | `loan-bcc/src/main/resources/tables/ft/repay/Ft_repay_table.tables.xml` | `com.spdb.ccbs.loan.bcc.tables.ft.repay` |
-| `cust` | `comm-bcc/src/main/resources/tables/cust/Cust_info_table.tables.xml` | `com.spdb.ccbs.comm.bcc.tables.cust` |
+| `ft` | `src/main/resources/tables/ft/Ft_acct_table.tables.xml` | `com.spdb.ccbs.loan.bcc.tables.ft` |
+| `ft/repay` | `src/main/resources/tables/ft/repay/Ft_repay_table.tables.xml` | `com.spdb.ccbs.loan.bcc.tables.ft.repay` |
+| `cust` | `src/main/resources/tables/cust/Cust_info_table.tables.xml` | `com.spdb.ccbs.comm.bcc.tables.cust` |
 
 ## SchemaId 命名规则
 

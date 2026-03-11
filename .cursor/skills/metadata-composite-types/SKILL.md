@@ -108,7 +108,8 @@ package： com.spdb.ccbs.loan.resources.type.ft.repay
 | `id` | 文件唯一标识，同文件名前缀 | 用户提供，全局唯一 |
 | `package` | Java 包路径 | 根据领域自动映射 |
 | `longname` | 复合类型文件中文名 | 用户提供 |
-| `classgen` | — | 固定 `auto` |
+| `classgen` | — | 固定 `normal` |
+| `generate` | — | 固定 `auto` |
 | `xsi:noNamespaceSchemaLocation` | — | 固定 `ltts-model.xsd` |
 
 ---
@@ -382,7 +383,7 @@ python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/script
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtAcctgType" package="com.spdb.ccbs.loan.resources.type.ft.repay" longname="福费延还款复合类型" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtAcctgType" package="com.spdb.ccbs.loan.resources.type.ft.repay" longname="福费延还款复合类型" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <complexType abstract="false" dict="false" id="FtAcctRepayChkInPojo" introduct="false" localName="" longname="福费延还款校验输入" extension="" tags="">
         <element id="fRFTGDueBillCd" longname="福费延借据编码" type="MBaseType.U_DAI_KUAN_JIE_JU_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.F.fRFTGDueBillCd"/>
         <element id="fncgBsnID" longname="融资业务编码" type="MBaseType.U_RONG_ZI_YE_WU_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.F.fncgBsnID"/>

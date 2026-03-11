@@ -6,7 +6,7 @@
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="{SchemaId}" package="{包路径}" longname="{复合类型文件中文名}" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="{SchemaId}" package="{包路径}" longname="{复合类型文件中文名}" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <complexType abstract="false" dict="false" id="{对象英文名}" introduct="false" localName="" longname="{对象中文名}" extension="" tags="">
         <element id="{字段英文名}" longname="{字段中文名}" type="{字段类型}" required="{true|false}" multi="{true|false}" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="{字典引用}"/>
         <!-- 更多 element... -->
@@ -33,7 +33,7 @@
 ### 格式示例
 
 ```xml
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtAcctgType" package="com.spdb.ccbs.loan.resources.type.ft.repay" longname="福费延还款复合类型" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtAcctgType" package="com.spdb.ccbs.loan.resources.type.ft.repay" longname="福费延还款复合类型" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
 ```
 
 ---
@@ -184,7 +184,7 @@ id → longname → type → required → multi → range → array → final �
 **正确** ✅：
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtAcctgType" package="com.spdb.ccbs.loan.resources.type.ft.repay" longname="福费延还款复合类型" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="FtAcctgType" package="com.spdb.ccbs.loan.resources.type.ft.repay" longname="福费延还款复合类型" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <complexType abstract="false" dict="false" id="FtAcctRepayChkInPojo" introduct="false" localName="" longname="福费延还款校验输入" extension="" tags="">
         <element id="fRFTGDueBillCd" longname="福费延借据编码" type="MBaseType.U_DAI_KUAN_JIE_JU_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.F.fRFTGDueBillCd"/>
         <element id="fncgBsnID" longname="融资业务编码" type="MBaseType.U_RONG_ZI_YE_WU_BIAN_MA" required="false" multi="false" range="false" array="false" final="false" override="false" allowSubType="true" key="false" ref="MDict.F.fncgBsnID"/>
@@ -202,7 +202,8 @@ id → longname → type → required → multi → range → array → final �
 <schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         id="FtAcctgType"
         package="com.spdb.ccbs.loan.resources.type.ft.repay"
-        classgen="auto"/>
+        classgen="normal"
+        generate="auto"/>
 
 <!-- ❌ element 属性换行 -->
 <element id="fRFTGDueBillCd"
