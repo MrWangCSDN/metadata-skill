@@ -2,6 +2,8 @@
 
 本文档提供 flowtran 交易创建和修改的完整示例。
 
+> 以下示例假设工作空间绝对路径为 `/Users/xxx/project`。
+
 ## 示例 1: 基本交易创建 (TY291)
 
 **用户输入**:
@@ -35,7 +37,7 @@ xb      性别
 </flowtran>
 ```
 
-**文件路径**: `comm-pbf/src/main/resources/trans/TY291.flowtrans.xml`
+**文件绝对路径**: `/Users/xxx/project/ccbs-comm-impl/comm-pbf/src/main/resources/trans/TY291.flowtrans.xml`
 
 ## 示例 2: 带数组字段的交易 (TY292)
 
@@ -113,7 +115,7 @@ chrgAmt 收费金额
 </flowtran>
 ```
 
-**文件路径**: `comm-pbf/src/main/resources/trans/chrg/TY291.flowtrans.xml`
+**文件绝对路径**: `/Users/xxx/project/ccbs-comm-impl/comm-pbf/src/main/resources/trans/chrg/TY291.flowtrans.xml`
 
 **关键差异**:
 - package: `com.spdb.ccbs.comm.pbf.trans.chrg` (追加了 .chrg)
@@ -139,7 +141,7 @@ chrgAmt 收费金额
 </flowtran>
 ```
 
-**文件**: `dept-pbf/src/main/resources/trans/TC100.flowtrans.xml`
+**文件绝对路径**: `/Users/xxx/project/ccbs-dept-impl/dept-pbf/src/main/resources/trans/TC100.flowtrans.xml`
 
 ### 贷款领域 (TD250)
 
@@ -160,7 +162,7 @@ chrgAmt 收费金额
 </flowtran>
 ```
 
-**文件**: `loan-pbf/src/main/resources/trans/TD250.flowtrans.xml`
+**文件绝对路径**: `/Users/xxx/project/ccbs-loan-impl/loan-pbf/src/main/resources/trans/TD250.flowtrans.xml`
 
 ## 示例 5: 修改现有交易
 
@@ -426,6 +428,180 @@ totalCount 总记录数
 
 ---
 
+## 示例 9: 含流程编排（flow）的交易
+
+**用户输入**：
+```
+帮我新建 TC200 存款账户综合处理 的联机交易
+
+输入:
+accountNo  账号  必输
+crcyCd     币种代码
+
+输出:
+accountNo  账号
+balance    余额
+
+流程编排：
+服务：内部户账户信息查询
+服务：获取放款和贷款还款账号对应的模块信息
+方法：beforeQryAcctInfo 外调存款公共通用记账前处理
+服务：负债账户支取
+方法：第一次记账后处理
+```
+
+**处理步骤**：
+
+1. **input/output**（`账号`、`币种代码`、`余额`）→ 查 MCP
+2. **流程编排服务搜索**：
+   - `内部户账户信息查询` → 调用 `find_services_ref.py` 脚本：
+     ```bash
+     python "{工作区根目录}/.speedstudio/skills/metadata-services/scripts/find_services_ref.py" "{工作区根目录}" 内部户账户信息查询
+     ```
+     找到：`serviceTypeId=IoCpInnerAcctInfoQryPbsSvtp`，`serviceId=IoCpInnerAcctInfoQryPbsSvtp`
+   - `获取放款和贷款还款账号对应的模块信息` → 调用脚本搜索
+     找到：`serviceTypeId=LoanRepayModInfoQryPbsSvtp`，`serviceId=LoanRepayModInfoQryPbsSvtp`
+   - `负债账户支取` → 调用脚本搜索
+     未找到 → 调用 MCP `queryServiceDetail` → 找到：`serviceTypeId=DebtAcctWithdrawPbsSvtp`，`serviceId=DebtAcctWithdrawPbsSvtp`
+3. **流程编排方法节点**：
+   - `beforeQryAcctInfo 外调存款公共通用记账前处理` → method="beforeQryAcctInfo"，longname="外调存款公共通用记账前处理"，desc="外调存款公共通用记账前处理"
+   - `第一次记账后处理` → 无英文名，翻译 → method="firstPostAcctProcess"，longname="第一次记账后处理"，desc="第一次记账后处理"
+
+**工作台展示**：
+```
+📋 MCP 字段查询结果：
+  ✅ 账号       →  type=MBaseType.U_ZHANG_HAO  ref=MDict.A.accountNo
+  ✅ 币种代码   →  type=MBaseType.U_BI_ZHONG_DAI_MA  ref=MDict.C.crcyCd
+  ✅ 余额       →  type=MBaseType.U_JIN_E  ref=MDict.B.balance
+
+🔍 流程编排服务搜索结果：
+  ✅ 内部户账户信息查询  →  serviceTypeId=IoCpInnerAcctInfoQryPbsSvtp, serviceId=IoCpInnerAcctInfoQryPbsSvtp → serviceName=IoCpInnerAcctInfoQryPbsSvtp.IoCpInnerAcctInfoQryPbsSvtp（脚本找到）
+  ✅ 获取放款和贷款还款账号对应的模块信息  →  serviceTypeId=LoanRepayModInfoQryPbsSvtp, serviceId=LoanRepayModInfoQryPbsSvtp → serviceName=LoanRepayModInfoQryPbsSvtp.LoanRepayModInfoQryPbsSvtp（脚本找到）
+  ✅ 负债账户支取  →  serviceTypeId=DebtAcctWithdrawPbsSvtp, serviceId=DebtAcctWithdrawPbsSvtp → serviceName=DebtAcctWithdrawPbsSvtp.DebtAcctWithdrawPbsSvtp（MCP 找到）
+```
+
+**生成的 XML**：
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<flowtran xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="TC200" longname="存款账户综合处理" kind="auto" package="com.spdb.ccbs.dept.pbf.trans" txnMode="A" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+    <description><![CDATA[存款账户综合处理]]></description>
+    <interface package="com.spdb.ccbs.dept.pbf.trans.intf">
+        <input packMode="true">
+            <field id="accountNo" type="MBaseType.U_ZHANG_HAO" required="true" multi="false" array="false" longname="账号" ref="MDict.A.accountNo"/>
+            <field id="crcyCd" type="MBaseType.U_BI_ZHONG_DAI_MA" required="false" multi="false" array="false" longname="币种代码" ref="MDict.C.crcyCd"/>
+        </input>
+        <output asParm="true" packMode="true">
+            <field id="accountNo" type="MBaseType.U_ZHANG_HAO" required="false" multi="false" array="false" longname="账号" ref="MDict.A.accountNo"/>
+            <field id="balance" type="MBaseType.U_JIN_E" required="false" multi="false" array="false" longname="余额" ref="MDict.B.balance"/>
+        </output>
+    </interface>
+    <flow>
+        <service mappingToProperty="true" serviceName="IoCpInnerAcctInfoQryPbsSvtp.IoCpInnerAcctInfoQryPbsSvtp" id="IoCpInnerAcctInfoQryPbsSvtp" longname="内部户账户信息查询"/>
+        <service mappingToProperty="true" serviceName="LoanRepayModInfoQryPbsSvtp.LoanRepayModInfoQryPbsSvtp" id="LoanRepayModInfoQryPbsSvtp" longname="获取放款和贷款还款账号对应的模块信息"/>
+        <method method="beforeQryAcctInfo" id="beforeQryAcctInfo" longname="外调存款公共通用记账前处理" desc="外调存款公共通用记账前处理"/>
+        <service mappingToProperty="true" serviceName="DebtAcctWithdrawPbsSvtp.DebtAcctWithdrawPbsSvtp" id="DebtAcctWithdrawPbsSvtp" longname="负债账户支取"/>
+        <method method="firstPostAcctProcess" id="firstPostAcctProcess" longname="第一次记账后处理" desc="第一次记账后处理"/>
+    </flow>
+</flowtran>
+```
+
+**文件绝对路径**: `/Users/xxx/project/ccbs-dept-impl/dept-pbf/src/main/resources/trans/TC200.flowtrans.xml`
+
+**关键说明**：
+- flow 标签位于 interface 之后
+- service 和 method 按用户指定的顺序排列
+- service 标签的 `serviceName` 和 `id` 来自服务文件搜索结果
+- method 标签的 `method` 和 `id` 值一致
+- 未指定英文名的方法节点，中文翻译为英文小驼峰
+- 未指定 `desc` 的方法节点，`desc` 与 `longname` 相同
+
+---
+
+## 示例 10: 流程编排中服务未找到
+
+**场景**：流程编排中的「负债账户支取」在脚本和 MCP 中均未找到
+
+**脚本返回**：
+```json
+[
+  {
+    "found": false,
+    "query": "负债账户支取",
+    "scannedServices": 156,
+    "message": "未找到匹配 '负债账户支取' 的服务（共扫描 156 个 service）"
+  }
+]
+```
+
+**MCP queryServiceDetail 返回**：无匹配结果
+
+**工作台输出**：
+```
+🔍 流程编排服务搜索结果：
+  ✅ 内部户账户信息查询  →  serviceTypeId=IoCpInnerAcctInfoQryPbsSvtp, serviceId=IoCpInnerAcctInfoQryPbsSvtp → serviceName=IoCpInnerAcctInfoQryPbsSvtp.IoCpInnerAcctInfoQryPbsSvtp（脚本找到）
+  ❌ 负债账户支取  →  服务不存在（脚本未找到，MCP 也未找到），已跳过
+```
+
+**生成的 XML**（未找到的服务不写入 flow）：
+```xml
+<flow>
+    <service mappingToProperty="true" serviceName="IoCpInnerAcctInfoQryPbsSvtp.IoCpInnerAcctInfoQryPbsSvtp" id="IoCpInnerAcctInfoQryPbsSvtp" longname="内部户账户信息查询"/>
+    <method method="beforeQryAcctInfo" id="beforeQryAcctInfo" longname="外调存款公共通用记账前处理" desc="外调存款公共通用记账前处理"/>
+</flow>
+```
+
+**最终汇总提示**：
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️  以下内容未写入 XML，请确认后补充：
+
+【流程编排服务未找到】（需确认服务是否已创建）：
+  1. 负债账户支取
+
+💡 确认服务已创建后，可重新执行以补充这些节点。
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+---
+
+## 示例 11: 含方法描述的流程编排
+
+**用户输入**：
+```
+帮我新建 TC250 存款支取交易 的联机交易
+
+输入:
+accountNo  账号  必输
+
+输出:
+accountNo  账号
+
+流程编排：
+服务：内部户账户信息查询
+方法：beforeQryAcctInfo 外调存款公共通用记账前处理
+服务：负债账户支取   描述：用于存入支取
+方法：doProcess 记账处理   描述：执行核心记账逻辑
+方法：第一次记账后处理
+```
+
+**方法节点解析**：
+- `beforeQryAcctInfo 外调存款公共通用记账前处理` → method="beforeQryAcctInfo"，desc="外调存款公共通用记账前处理"（无描述，desc=longname）
+- `doProcess 记账处理   描述：执行核心记账逻辑` → method="doProcess"，longname="记账处理"，desc="执行核心记账逻辑"（有描述）
+- `第一次记账后处理` → method=翻译英文，desc="第一次记账后处理"（无英文名，无描述）
+
+**生成的 flow**：
+```xml
+<flow>
+    <service mappingToProperty="true" serviceName="IoCpInnerAcctInfoQryPbsSvtp.IoCpInnerAcctInfoQryPbsSvtp" id="IoCpInnerAcctInfoQryPbsSvtp" longname="内部户账户信息查询"/>
+    <method method="beforeQryAcctInfo" id="beforeQryAcctInfo" longname="外调存款公共通用记账前处理" desc="外调存款公共通用记账前处理"/>
+    <service mappingToProperty="true" serviceName="DebtAcctWithdrawPbsSvtp.DebtAcctWithdrawPbsSvtp" id="DebtAcctWithdrawPbsSvtp" longname="负债账户支取"/>
+    <method method="doProcess" id="doProcess" longname="记账处理" desc="执行核心记账逻辑"/>
+    <method method="firstPostAcctProcess" id="firstPostAcctProcess" longname="第一次记账后处理" desc="第一次记账后处理"/>
+</flow>
+```
+
+---
+
 ## 快速参考
 
 ### XML 格式清单
@@ -454,4 +630,11 @@ totalCount 总记录数
 属性接口：
 [{引用复合对象中文名}]  {多值}  {必输}
 {普通字段中文名}
+
+流程编排：
+服务：{服务中文名}
+服务：{服务中文名}   描述：{描述}
+方法：{英文方法名} {方法中文名}
+方法：{英文方法名} {方法中文名}   描述：{方法描述}
+方法：{方法中文名}
 ```

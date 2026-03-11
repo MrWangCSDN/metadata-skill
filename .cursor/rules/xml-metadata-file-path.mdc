@@ -1,0 +1,54 @@
+---
+description: XML 元数据文件创建时必须使用工作空间绝对路径，适用于所有元数据模型（flowtran、services、pbc、tables、composite-types）的 XML 文件创建。
+alwaysApply: true
+---
+
+# XML 元数据文件创建路径规则
+
+创建任何 XML 元数据文件（.flowtrans.xml、.pbs.xml、.pcs.xml、.pbcb.xml、.pbcp.xml、.pbcc.xml、.pbct.xml、.tables.xml、.c_schema.xml 等）时，**必须使用当前工作空间的绝对路径**，禁止使用相对路径。
+
+## 强制执行步骤
+
+1. **获取并展示工作空间绝对路径**（必须在创建文件前执行）：
+   ```
+   📂 当前工作空间：{工作空间绝对路径}
+   ```
+
+2. **按以下顺序逐层拼接完整文件路径**：
+   ```
+   {工作空间绝对路径}/{工程}/{模块}/{资源路径}/{子目录}/{文件名}
+   ```
+
+   | 顺序 | 层级 | 说明 |
+   |------|------|------|
+   | 1 | 工作空间 | 当前打开项目的根目录绝对路径 |
+   | 2 | 工程 | 按领域映射的工程目录（如 ccbs-comm-impl） |
+   | 3 | 模块 | 按领域映射的模块目录（如 comm-pbf） |
+   | 4 | 资源路径 | 按元数据类型对应的固定资源路径 |
+   | 5 | 子目录 | 用户指定时追加，未指定则无 |
+   | 6 | 文件名 | 按元数据类型对应的命名规则 |
+
+3. **使用拼接后的完整绝对路径创建文件**。
+
+## 工程映射
+
+| 领域 | 工程 |
+|------|------|
+| 存款 (dept) | ccbs-dept-impl |
+| 贷款 (loan) | ccbs-loan-impl |
+| 结算 (sett) | ccbs-sett-impl |
+| 平台公共 (comm) | ccbs-comm-impl |
+
+## 示例
+
+```
+/Users/xxx/project/ccbs-comm-impl/comm-pbf/src/main/resources/trans/TY291.flowtrans.xml
+/Users/xxx/project/ccbs-loan-impl/loan-pbs/src/main/resources/api/servicetype/FtAcctgDealPbsSvtp.pbs.xml
+/Users/xxx/project/ccbs-dept-impl/dept-resources/src/main/resources/type/DeptAcctType.c_schema.xml
+```
+
+## 禁止行为
+
+- ❌ 使用相对路径创建文件（如 `comm-pbf/src/main/resources/trans/TY291.flowtrans.xml`）
+- ❌ 跳过工作空间路径展示步骤
+- ❌ 跳过工程层级直接从模块开始拼接路径

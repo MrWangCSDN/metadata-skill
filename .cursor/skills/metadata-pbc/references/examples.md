@@ -8,7 +8,7 @@
 帮我创建 GnfeeTrialChecks 保函费用试算校验 业务构件，结算领域，子目录 gnfee
 
 服务：
-GnfeeTrialChecksPbcbSvtp gnfeeTrialChecks 保函费用试算校验
+GnfeeTrialChecksPbcb gnfeeTrialChecks 保函费用试算校验
   描述：保函费用试算校验服务
   输入：[保函费用试算输入]，币种代码
   输出：利息金额
@@ -20,8 +20,8 @@ GnfeeTrialChecksPbcbSvtp gnfeeTrialChecks 保函费用试算校验
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="GnfeeTrialChecksPbcbSvtp" kind="auto" longname="保函费用试算校验" package="com.spdb.ccbs.sett.pbcb.api.serviceType.gnfee" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
-    <service id="GnfeeTrialChecksPbcbSvtp" name="gnfeeTrialChecks" longname="保函费用试算校验">
+<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="GnfeeTrialChecksPbcbSvtp" kind="auto" longname="保函费用试算校验" package="com.spdb.ccbs.sett.pbcb.api.servicetype.gnfee" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
+    <service id="GnfeeTrialChecksPbcb" name="gnfeeTrialChecks" longname="保函费用试算校验">
         <description><![CDATA[保函费用试算校验服务]]></description>
         <interface>
             <input packMode="false">
@@ -57,12 +57,12 @@ GnfeeTrialChecksPbcbSvtp gnfeeTrialChecks 保函费用试算校验
 创建 IoCpCustAccountQry 客户账户查询业务构件，存款领域
 
 服务1：
-QueryCustAcctPbcbSvtp queryCustAcct 查询客户账户
+QueryCustAcctPbcb queryCustAcct 查询客户账户
   输入：客户编号 必输
   输出：账号
 
 服务2：
-QueryCustBalancePbcbSvtp queryCustBalance 查询客户余额
+QueryCustBalancePbcb queryCustBalance 查询客户余额
   输入：账号 必输
   输出：可用余额
 ```
@@ -73,8 +73,8 @@ QueryCustBalancePbcbSvtp queryCustBalance 查询客户余额
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="IoCpCustAccountQryPbcbSvtp" kind="auto" longname="客户账户查询业务构件" package="com.spdb.ccbs.dept.pbcb.api.serviceType" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
-    <service id="QueryCustAcctPbcbSvtp" name="queryCustAcct" longname="查询客户账户">
+<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="IoCpCustAccountQryPbcbSvtp" kind="auto" longname="客户账户查询业务构件" package="com.spdb.ccbs.dept.pbcb.api.servicetype" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
+    <service id="QueryCustAcctPbcb" name="queryCustAcct" longname="查询客户账户">
         <interface>
             <input packMode="false">
                 <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" required="true" multi="false" array="false" longname="客户编号" ref="MDict.C.custId"/>
@@ -84,7 +84,7 @@ QueryCustBalancePbcbSvtp queryCustBalance 查询客户余额
             </output>
         </interface>
     </service>
-    <service id="QueryCustBalancePbcbSvtp" name="queryCustBalance" longname="查询客户余额">
+    <service id="QueryCustBalancePbcb" name="queryCustBalance" longname="查询客户余额">
         <interface>
             <input packMode="false">
                 <field id="acctNo" type="MBaseType.U_ZHANG_HAO" required="true" multi="false" array="false" longname="账号" ref="MDict.A.acctNo"/>
@@ -132,8 +132,8 @@ chargeCalc 费用计算
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="ChargeCalcPbcbSvtp" kind="auto" longname="费用计算" package="com.spdb.ccbs.loan.pbcb.api.serviceType" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
-    <service id="ChargeCalcPbcbSvtp" name="chargeCalc" longname="费用计算">
+<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="ChargeCalcPbcbSvtp" kind="auto" longname="费用计算" package="com.spdb.ccbs.loan.pbcb.api.servicetype" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
+    <service id="ChargeCalcPbcb" name="chargeCalc" longname="费用计算">
         <interface>
             <input packMode="false">
                 <field id="loanCntrNo" type="MBaseType.U_HE_TONG_HAO" required="true" multi="false" array="false" longname="贷款合同号" ref="MDict.L.loanCntrNo"/>
@@ -180,8 +180,8 @@ queryCustInfo 查询客户信息
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="CustInfoQryPbccSvtp" kind="auto" longname="客户信息查询" package="com.spdb.ccbs.comm.pbcc.api.serviceType.cust" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
-    <service id="CustInfoQryPbccSvtp" name="queryCustInfo" longname="查询客户信息">
+<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="CustInfoQryPbccSvtp" kind="auto" longname="客户信息查询" package="com.spdb.ccbs.comm.pbcc.api.servicetype.cust" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
+    <service id="CustInfoQryPbcc" name="queryCustInfo" longname="查询客户信息">
         <interface>
             <input packMode="false">
                 <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" required="true" multi="false" array="false" longname="客户编号" ref="MDict.C.custId"/>
@@ -230,8 +230,8 @@ queryLoanInfo 查询贷款信息
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="LoanQueryPbcbSvtp" kind="auto" longname="贷款查询" package="com.spdb.ccbs.loan.pbcb.api.serviceType" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
-    <service id="LoanQueryPbcbSvtp" name="queryLoanInfo" longname="查询贷款信息">
+<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="LoanQueryPbcbSvtp" kind="auto" longname="贷款查询" package="com.spdb.ccbs.loan.pbcb.api.servicetype" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
+    <service id="LoanQueryPbcb" name="queryLoanInfo" longname="查询贷款信息">
         <interface>
             <input packMode="false">
                 <field id="loanCntrNo" type="MBaseType.U_HE_TONG_HAO" required="true" multi="false" array="false" longname="贷款合同号" ref="MDict.L.loanCntrNo"/>
@@ -301,8 +301,8 @@ openNewAcct 新开账户
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="IoAcctOpenPbcpSvtp" kind="auto" longname="开户产品构件" package="com.spdb.ccbs.dept.pbcp.api.serviceType.acct" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
-    <service id="IoAcctOpenPbcpSvtp" name="openNewAcct" longname="新开账户">
+<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="IoAcctOpenPbcpSvtp" kind="auto" longname="开户产品构件" package="com.spdb.ccbs.dept.pbcp.api.servicetype.acct" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
+    <service id="IoAcctOpenPbcp" name="openNewAcct" longname="新开账户">
         <interface>
             <input packMode="false">
                 <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" required="true" multi="false" array="false" longname="客户编号" ref="MDict.C.custId"/>

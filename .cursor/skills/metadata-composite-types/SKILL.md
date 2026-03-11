@@ -207,11 +207,13 @@ package： com.spdb.ccbs.loan.resources.type.ft.repay
 ```
 输入写法                                      → 解析结果
 ──────────────────────────────────────────────────────────────────
-[保函收到撤销索偿]                            → 复合引用，单值，id 自动生成
+[保函收到撤销索偿]                            → 复合引用（中文检索），单值，id 自动生成
+[GrntRcvCxlClmPojo]                           → 复合引用（英文检索），单值，id 自动生成
 [保函收到撤销索偿]  多值                      → 复合引用，multi=true，id 末尾加 List
 [保函收到撤销索偿]  必输                      → 复合引用，required=true
 [保函收到撤销索偿]  多值  必输               → 复合引用，multi=true，required=true，id 末尾加 List
 lstXxx [保函收到撤销索偿]                     → 复合引用，id = lstXxx（用户指定，不追加 List）
+lstXxx [GrntRcvCxlClmPojo]                    → 复合引用（英文检索），id = lstXxx
 lstXxx [保函收到撤销索偿]  多值  必输        → 复合引用，id = lstXxx，multi=true，required=true
 保函收到撤销索偿（复合对象）                  → 兼容旧写法，等同于 [保函收到撤销索偿]
 保函收到撤销索偿（复合对象）  多值            → 兼容旧写法，multi=true
@@ -220,63 +222,97 @@ lstXxx [保函收到撤销索偿]  多值  必输        → 复合引用，id =
 普通字段中文名  多值                          → 普通字段，查 MCP，multi=true
 ```
 
-> **关键判断**：一行中有 `[...]` 或 `（复合对象）` → 复合引用；否则 → 普通字段。
+> **关键判断**：一行中有 `[...]` 或 `（复合对象）` → 复合引用（中括号内含中文 → 按 longname 检索；纯英文 → 按 complexType id 检索）；否则 → 普通字段。
+> ⛔ **搜索时必须使用 `[]` 中括号内的完整内容，禁止截取、拆分、翻译或改写。**
 
-**解析规则**：`[中文名]` 或 `xxx（复合对象）` 均视为复合类型引用；中括号前若有英文名则作为 `id`，否则按 id 生成规则处理。
+**解析规则**：`[中文名]`、`[英文id]` 或 `xxx（复合对象）` 均视为复合类型引用；中括号前若有英文名则作为 `id`，否则按 id 生成规则处理。
 
 ### 处理流程
 
-> ⛔ **强制流程：引用复合类型时必须调用 `scripts/find_composite_ref.py` 脚本搜索，不得自行猜测 type 值。**
+> ⛔ **强制流程：引用复合类型时必须通过搜索确认存在，不得自行猜测 type 值。**
+>
+> ⛔ **强制规则：搜索时必须严格使用 `[]` 中括号内的完整内容作为查询词，禁止对中括号内的内容做任何截取、拆分、翻译或改写。** 例如 `[保函收到撤销索偿]`，查询词必须是 `保函收到撤销索偿` 完整字符串；`[GrntRcvCxlClmPojo]`，查询词必须是 `GrntRcvCxlClmPojo` 完整字符串。
 
-1. **调用脚本搜索** — 执行 `scripts/find_composite_ref.py` 脚本，传入搜索目录和中文名
-2. **解析脚本返回的 JSON** — 从结果中提取 `type`（已组合好的 `{schemaId}.{complexTypeId}`）
-3. **找到（`found: true`）** → 使用脚本返回的 `type` 生成 element，**不填写 `ref`**，不查 MCP
-4. **未找到（`found: false`）** → **强制不写入 XML**，在反馈中提示「{字段中文名}（复合对象）未找到，已跳过」
-5. **多个匹配（`multiple: true`）** → 列出所有候选，询问用户选择哪一个
+**`[xxx]` 支持中文和英文**：
+- `[保函收到撤销索偿]` → 中文，按 complexType 的 `longname` 精确匹配完整内容
+- `[GrntRcvCxlClmPojo]` → 英文，按 complexType 的 `id` 精确匹配完整内容
+
+**三步查询，逐步回退**：
+
+1. **优先调用 `find_composite_ref.py` 脚本**（在工作空间下递归遍历所有 `*.c_schema.xml`）：
+   ```bash
+   python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}" 保函收到撤销索偿
+   ```
+   ```bash
+   python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}" GrntRcvCxlClmPojo
+   ```
+   - ⛔ 脚本参数必须是 `[]` 中括号内的**完整原文**，不得截取或改写
+   - 脚本自动判断：包含中文字符 → 按 `longname` 匹配；纯英文 → 按 `complexType id` 匹配
+   - 脚本内部已做去重（按 schemaId + complexTypeId）
+
+2. **脚本查询不到时，调用 MCP 服务 `dict-mcp-server.queryComplexDetail`**：
+   - ⛔ 输入参数必须是 `[]` 中括号内的**完整原文**，不得截取或改写
+   - 返回复合类型定义信息（schemaId、complexTypeId、complexTypeLongname、type 等）
+   - MCP 返回的数据同样需要去重（按 schemaId + complexTypeId）
+
+3. **MCP 也查询不到时（⛔ 强制规则）**：
+   - **XML 中不写入该 element**，该引用完全跳过
+   - **立即在工作台输出**：`❌ [xxx] → 未找到匹配的复合类型，已跳过`
+   - **生成 XML 后在汇总提示中统一列出**
+
+**找到唯一匹配时（`found: true`）** → 使用返回的 `type` 生成 element，**不填写 `ref`**，不查 MCP
+
+**去重后仍有多个匹配时（`multiple: true`）** → 在工作台列出所有候选（展示 schemaId、complexTypeId、type），明确告知用户让其选择其中一个，用户选择后再继续生成
 
 ### 脚本调用方式
 
-> ⛔ **路径规则**：脚本固定在 `.speedstudio` 目录下，必须使用**绝对路径**，第一个参数必须是脚本文件完整路径（以 `find_composite_ref.py` 结尾），**不能**只传目录。Python 命令**只能使用 `python xxx`**，不得使用其他命令。
+> ⛔ **路径规则**：脚本固定在 `.cursor` 目录下，必须使用**绝对路径**。Python 命令**只能使用 `python xxx`**，不得使用其他命令。
 
 **脚本绝对路径**：`{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py`
 
-**搜索目录绝对路径**：`{工作区根目录}/{模块相对路径}`
+**参数**：
+- 第 1 个参数：工作空间根目录绝对路径
+- 第 2 个参数：`[]` 中括号内的完整查询词（中文或英文）
 
 ```bash
-# 按中文名搜索
-python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}/loan-resources/src/main/resources/type" 保函收到撤销索偿
+# 按中文名搜索（传入 [] 内完整中文）
+python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}" 保函收到撤销索偿
 
-# 按英文 id 搜索
-python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}/loan-resources/src/main/resources/type" "" --id ObCstSetl
+# 按英文 id 搜索（传入 [] 内完整英文）
+python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}" GrntRcvCxlClmPojo
 ```
 
-**`<search_dir>` 与领域对应**：
-
-| 领域 | 搜索目录绝对路径 |
-|------|----------------|
-| 存款 | `{工作区根目录}/dept-resources/src/main/resources/type` |
-| 贷款 | `{工作区根目录}/loan-resources/src/main/resources/type` |
-| 结算 | `{工作区根目录}/sett-resources/src/main/resources/type` |
-| 平台公共 | `{工作区根目录}/comm-resources/src/main/resources/type` |
-
-> 脚本会**递归搜索**子目录。工作区根目录可通过当前打开文件路径推断（如 `D:\code\ccbs-loan-impl`）。
+> 脚本会在工作空间下**递归遍历所有 `*.c_schema.xml` 文件**，自动跳过 target 目录。无需指定领域或搜索子目录。
 
 **脚本返回示例**：
 
 ```json
-// 找到时
+// 找到唯一匹配时
 {
   "found": true,
+  "query": "保函收到撤销索偿",
   "schemaId": "GuaranteeType",
   "complexTypeId": "GrntRcvCxlClmPojo",
-  "filePath": "loan-resources/src/main/resources/type/GuaranteeType.c_schema.xml",
+  "complexTypeLongname": "保函收到撤销索偿",
+  "filePath": "ccbs-loan-impl/loan-resources/src/main/resources/type/GuaranteeType.c_schema.xml",
   "type": "GuaranteeType.GrntRcvCxlClmPojo"
+}
+
+// 去重后多个匹配时
+{
+  "found": true,
+  "query": "保函收到撤销索偿",
+  "multiple": true,
+  "candidates": [...],
+  "message": "找到 2 个匹配（已去重），请确认使用哪一个"
 }
 
 // 未找到时
 {
   "found": false,
-  "message": "在 loan-resources/src/main/resources/type 下未找到 longname='保函收到撤销索偿' 的 complexType（共扫描 5 个文件）"
+  "query": "保函收到撤销索偿",
+  "scannedFiles": 15,
+  "message": "在 /path/to/workspace 下未找到匹配 '保函收到撤销索偿' 的 complexType（共扫描 15 个文件）"
 }
 ```
 
@@ -387,7 +423,7 @@ python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/script
 - [ ] 区分三类字段：普通字段（查 MCP）、复合类型引用字段（搜索 c_schema.xml）、多值字段（multi=true）
 - [ ] 调用 `dict-mcp-server.getDictDefByLongNameList` 批量查询普通字段
 - [ ] ⛔ **强制过滤**：MCP 返回 null 的字段不写入 XML
-- [ ] ⛔ **复合类型引用**：对每个 `[中文名]` 或 `xxx（复合对象）`，调用 `python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{搜索目录绝对路径}" 中文名`；在工作台展示搜索结果；从返回 JSON 的 `type` 字段取值；找不到则不写入 XML；多个匹配则询问用户
+- [ ] ⛔ **复合类型引用**：对每个 `[xxx]`（⛔ 必须使用 `[]` 中括号内的完整原文，禁止截取或改写），**优先**调用 `python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}" xxx`（脚本在工作空间下递归遍历所有 `*.c_schema.xml`，自动判断中英文）；**脚本未找到** → 调用 MCP `dict-mcp-server.queryComplexDetail` 查询（⛔ 参数同样是完整原文）；**找到唯一** → 从返回 JSON 的 `type` 字段取值；**去重后多匹配** → 列出候选询问用户；**均未找到** → 不写入 XML；在工作台展示搜索结果
 - [ ] ⛔ **引用字段 id 确定**：用户提供英文名 → 直接用；未提供 → 取脚本返回的 `complexTypeId` 首字母小写；多值且无英文名 → 末尾追加 `List`
 - [ ] 多值字段：标注「多值」的字段 `multi="true"`，否则 `multi="false"`
 - [ ] 生成 XML：⛔ 所有标签属性必须在同一行，不换行；同级标签无空行；子标签缩进 4 空格
@@ -406,7 +442,7 @@ python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/script
 
 ## 参考资源
 
-- [scripts/find_composite_ref.py](scripts/find_composite_ref.py) — 搜索 c_schema.xml 并解析复合类型引用的脚本（⛔ 引用复合对象时必须调用）
+- [scripts/find_composite_ref.py](scripts/find_composite_ref.py) — 在工作空间下递归搜索所有 c_schema.xml 并解析复合类型引用的脚本（⛔ 引用复合对象时必须调用，参数为工作空间路径 + `[]` 内完整查询词）
 - [references/package-module-mapping.md](references/package-module-mapping.md) — 领域到包路径/模块映射
 - [references/xml-template.md](references/xml-template.md) — XML 完整模板说明
 - [references/examples.md](references/examples.md) — 完整创建/修改/引用示例

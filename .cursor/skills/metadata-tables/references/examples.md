@@ -25,13 +25,13 @@
 **生成的 XML**：
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Loan_acct_table" package="com.spdb.ccbs.loan.bcc.tables" longname="贷款账户表" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Loan_acct_table" package="com.spdb.ccbs.loan.bcc.tables" longname="贷款账户表" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <table id="loan_acct_table" name="loan_acct_table" longname="贷款账户表" extension="SysCommFieldTable.kapp_sys_genl_pub_fld">
         <fields>
-            <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" nullable="false" ref="MDict.C.custId" primarykey="true" final="false" identity="false" allowSubType="true" dbname="cust_id"/>
-            <field id="acctNo" type="MBaseType.U_ZHANG_HAO" nullable="false" ref="MDict.A.acctNo" primarykey="true" final="false" identity="false" allowSubType="true" dbname="acct_no"/>
-            <field id="acctBal" type="MBaseType.U_JIN_E" nullable="true" ref="MDict.A.acctBal" primarykey="false" final="false" identity="false" allowSubType="true" dbname="acct_bal"/>
-            <field id="crcyCd" type="MBaseType.U_BI_ZHONG_DAI_MA" nullable="true" ref="MDict.C.crcyCd" primarykey="false" final="false" identity="false" allowSubType="true" default="CNY" dbname="crcy_cd"/>
+            <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" nullable="false" longname="客户编号" ref="MDict.C.custId" primarykey="true" final="false" identity="false" allowSubType="true" dbname="cust_id"/>
+            <field id="acctNo" type="MBaseType.U_ZHANG_HAO" nullable="false" longname="账号" ref="MDict.A.acctNo" primarykey="true" final="false" identity="false" allowSubType="true" dbname="acct_no"/>
+            <field id="acctBal" type="MBaseType.U_JIN_E" nullable="true" longname="账户余额" ref="MDict.A.acctBal" primarykey="false" final="false" identity="false" allowSubType="true" dbname="acct_bal"/>
+            <field id="crcyCd" type="MBaseType.U_BI_ZHONG_DAI_MA" nullable="true" longname="币种代码" ref="MDict.C.crcyCd" primarykey="false" final="false" identity="false" allowSubType="true" default="CNY" dbname="crcy_cd"/>
         </fields>
     </table>
 </schema>
@@ -79,13 +79,13 @@ IDX_LOAN_ACCT_01   index       客户编号
 **生成的 XML**：
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Loan_acct_table" package="com.spdb.ccbs.loan.bcc.tables" longname="贷款账户表" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Loan_acct_table" package="com.spdb.ccbs.loan.bcc.tables" longname="贷款账户表" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <table id="loan_acct_table" name="loan_acct_table" longname="贷款账户表" extension="SysCommFieldTable.kapp_sys_genl_pub_fld">
         <fields>
-            <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" nullable="false" ref="MDict.C.custId" primarykey="true" final="false" identity="false" allowSubType="true" dbname="cust_id"/>
-            <field id="acctNo" type="MBaseType.U_ZHANG_HAO" nullable="false" ref="MDict.A.acctNo" primarykey="true" final="false" identity="false" allowSubType="true" dbname="acct_no"/>
-            <field id="acctBal" type="MBaseType.U_JIN_E" nullable="true" ref="MDict.A.acctBal" primarykey="false" final="false" identity="false" allowSubType="true" dbname="acct_bal"/>
-            <field id="crcyCd" type="MBaseType.U_BI_ZHONG_DAI_MA" nullable="true" ref="MDict.C.crcyCd" primarykey="false" final="false" identity="false" allowSubType="true" default="CNY" dbname="crcy_cd"/>
+            <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" nullable="false" longname="客户编号" ref="MDict.C.custId" primarykey="true" final="false" identity="false" allowSubType="true" dbname="cust_id"/>
+            <field id="acctNo" type="MBaseType.U_ZHANG_HAO" nullable="false" longname="账号" ref="MDict.A.acctNo" primarykey="true" final="false" identity="false" allowSubType="true" dbname="acct_no"/>
+            <field id="acctBal" type="MBaseType.U_JIN_E" nullable="true" longname="账户余额" ref="MDict.A.acctBal" primarykey="false" final="false" identity="false" allowSubType="true" dbname="acct_bal"/>
+            <field id="crcyCd" type="MBaseType.U_BI_ZHONG_DAI_MA" nullable="true" longname="币种代码" ref="MDict.C.crcyCd" primarykey="false" final="false" identity="false" allowSubType="true" default="CNY" dbname="crcy_cd"/>
         </fields>
         <odbindexes>
             <index id="selectByCustIdAndAcctNo" type="unique" fields="custId acctNo" operate="selectOne deleteOne updateOne selectOneWithLock"/>
@@ -127,12 +127,12 @@ IDX_LOAN_ACCT_01   index       客户编号
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Ft_acct_table" package="com.spdb.ccbs.loan.bcc.tables.ft" longname="福费延账户表" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Ft_acct_table" package="com.spdb.ccbs.loan.bcc.tables.ft" longname="福费延账户表" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <table id="ft_acct_table" name="ft_acct_table" longname="福费延账户表" extension="SysCommFieldTable.kapp_sys_genl_pub_fld">
         <fields>
-            <field id="fRFTGDueBillCd" type="MBaseType.U_DAI_KUAN_JIE_JU_BIAN_MA" nullable="false" ref="MDict.F.fRFTGDueBillCd" primarykey="true" final="false" identity="false" allowSubType="true" dbname="frftg_due_bill_cd"/>
-            <field id="fncgBsnID" type="MBaseType.U_RONG_ZI_YE_WU_BIAN_MA" nullable="false" ref="MDict.F.fncgBsnID" primarykey="false" final="false" identity="false" allowSubType="true" dbname="fncg_bsn_id"/>
-            <field id="crcyCd" type="MBaseType.U_BI_ZHONG_DAI_MA" nullable="true" ref="MDict.C.crcyCd" primarykey="false" final="false" identity="false" allowSubType="true" dbname="crcy_cd"/>
+            <field id="fRFTGDueBillCd" type="MBaseType.U_DAI_KUAN_JIE_JU_BIAN_MA" nullable="false" longname="福费延借据编码" ref="MDict.F.fRFTGDueBillCd" primarykey="true" final="false" identity="false" allowSubType="true" dbname="frftg_due_bill_cd"/>
+            <field id="fncgBsnID" type="MBaseType.U_RONG_ZI_YE_WU_BIAN_MA" nullable="false" longname="融资业务编码" ref="MDict.F.fncgBsnID" primarykey="false" final="false" identity="false" allowSubType="true" dbname="fncg_bsn_id"/>
+            <field id="crcyCd" type="MBaseType.U_BI_ZHONG_DAI_MA" nullable="true" longname="币种代码" ref="MDict.C.crcyCd" primarykey="false" final="false" identity="false" allowSubType="true" dbname="crcy_cd"/>
         </fields>
     </table>
 </schema>
@@ -165,11 +165,11 @@ IDX_LOAN_ACCT_01   index       客户编号
 **生成的 XML**（未贯标字段跳过）：
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Cust_info_table" package="com.spdb.ccbs.comm.bcc.tables" longname="客户信息表" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Cust_info_table" package="com.spdb.ccbs.comm.bcc.tables" longname="客户信息表" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <table id="cust_info_table" name="cust_info_table" longname="客户信息表" extension="SysCommFieldTable.kapp_sys_genl_pub_fld">
         <fields>
-            <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" nullable="false" ref="MDict.C.custId" primarykey="true" final="false" identity="false" allowSubType="true" dbname="cust_id"/>
-            <field id="custName" type="MBaseType.U_KE_HU_MING_CHENG" nullable="false" ref="MDict.C.custName" primarykey="false" final="false" identity="false" allowSubType="true" dbname="cust_name"/>
+            <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" nullable="false" longname="客户编号" ref="MDict.C.custId" primarykey="true" final="false" identity="false" allowSubType="true" dbname="cust_id"/>
+            <field id="custName" type="MBaseType.U_KE_HU_MING_CHENG" nullable="false" longname="客户名称" ref="MDict.C.custName" primarykey="false" final="false" identity="false" allowSubType="true" dbname="cust_name"/>
         </fields>
     </table>
 </schema>
@@ -216,10 +216,10 @@ PK_TEST  primarykey  客户编号 未知字段
 **生成的 XML**（未贯标字段跳过，相关索引不创建）：
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Test_table" package="com.spdb.ccbs.loan.bcc.tables" longname="测试表" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Test_table" package="com.spdb.ccbs.loan.bcc.tables" longname="测试表" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <table id="test_table" name="test_table" longname="测试表" extension="SysCommFieldTable.kapp_sys_genl_pub_fld">
         <fields>
-            <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" nullable="false" ref="MDict.C.custId" primarykey="true" final="false" identity="false" allowSubType="true" dbname="cust_id"/>
+            <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" nullable="false" longname="客户编号" ref="MDict.C.custId" primarykey="true" final="false" identity="false" allowSubType="true" dbname="cust_id"/>
         </fields>
     </table>
 </schema>
@@ -289,15 +289,15 @@ PK_TEST  primarykey  客户编号 未知字段
 **修改后的 XML**（仅在 `<fields>` 末尾追加新字段，其他部分保持不变）：
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Loan_acct_table" package="com.spdb.ccbs.loan.bcc.tables" longname="贷款账户表" classgen="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Loan_acct_table" package="com.spdb.ccbs.loan.bcc.tables" longname="贷款账户表" classgen="normal" generate="auto" xsi:noNamespaceSchemaLocation="ltts-model.xsd">
     <table id="loan_acct_table" name="loan_acct_table" longname="贷款账户表" extension="SysCommFieldTable.kapp_sys_genl_pub_fld">
         <fields>
-            <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" nullable="false" ref="MDict.C.custId" primarykey="true" final="false" identity="false" allowSubType="true" dbname="cust_id"/>
-            <field id="acctNo" type="MBaseType.U_ZHANG_HAO" nullable="false" ref="MDict.A.acctNo" primarykey="true" final="false" identity="false" allowSubType="true" dbname="acct_no"/>
-            <field id="acctBal" type="MBaseType.U_JIN_E" nullable="true" ref="MDict.A.acctBal" primarykey="false" final="false" identity="false" allowSubType="true" dbname="acct_bal"/>
-            <field id="crcyCd" type="MBaseType.U_BI_ZHONG_DAI_MA" nullable="true" ref="MDict.C.crcyCd" primarykey="false" final="false" identity="false" allowSubType="true" default="CNY" dbname="crcy_cd"/>
-            <field id="opnAcctDt" type="MBaseType.U_RI_QI" nullable="false" ref="MDict.O.opnAcctDt" primarykey="false" final="false" identity="false" allowSubType="true" dbname="opn_acct_dt"/>
-            <field id="acctSts" type="MBaseType.U_ZHANG_HU_ZHUANG_TAI" nullable="true" ref="MDict.A.acctSts" primarykey="false" final="false" identity="false" allowSubType="true" default="N" dbname="acct_sts"/>
+            <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" nullable="false" longname="客户编号" ref="MDict.C.custId" primarykey="true" final="false" identity="false" allowSubType="true" dbname="cust_id"/>
+            <field id="acctNo" type="MBaseType.U_ZHANG_HAO" nullable="false" longname="账号" ref="MDict.A.acctNo" primarykey="true" final="false" identity="false" allowSubType="true" dbname="acct_no"/>
+            <field id="acctBal" type="MBaseType.U_JIN_E" nullable="true" longname="账户余额" ref="MDict.A.acctBal" primarykey="false" final="false" identity="false" allowSubType="true" dbname="acct_bal"/>
+            <field id="crcyCd" type="MBaseType.U_BI_ZHONG_DAI_MA" nullable="true" longname="币种代码" ref="MDict.C.crcyCd" primarykey="false" final="false" identity="false" allowSubType="true" default="CNY" dbname="crcy_cd"/>
+            <field id="opnAcctDt" type="MBaseType.U_RI_QI" nullable="false" longname="开户日期" ref="MDict.O.opnAcctDt" primarykey="false" final="false" identity="false" allowSubType="true" dbname="opn_acct_dt"/>
+            <field id="acctSts" type="MBaseType.U_ZHANG_HU_ZHUANG_TAI" nullable="true" longname="账户状态" ref="MDict.A.acctSts" primarykey="false" final="false" identity="false" allowSubType="true" default="N" dbname="acct_sts"/>
         </fields>
     </table>
 </schema>

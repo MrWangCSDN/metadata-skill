@@ -223,7 +223,7 @@ FtExtAcctgPojo 福费延外部记账对象
 1. `币种代码`、`摘要编码`、`S码` → 查 MCP 获取字段元数据
 2. `保函收到撤销索偿（复合对象）` → **调用脚本**（必须传脚本文件完整路径，以 `find_composite_ref.py` 结尾）：
    ```bash
-   python "{工作区根目录}/.cursor/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}/loan-resources/src/main/resources/type" 保函收到撤销索偿
+   python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}/loan-resources/src/main/resources/type" 保函收到撤销索偿
    ```
    脚本返回：
    ```json
@@ -296,7 +296,7 @@ FtExtAcctgPojo 福费延外部记账对象
 
 **脚本调用**（必须传脚本文件完整路径；Windows 下若 `python` 不可用则改用 `py`）：
 ```bash
-python "{工作区根目录}/.cursor/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}/loan-resources/src/main/resources/type" 保函收到撤销索偿
+python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}/loan-resources/src/main/resources/type" 保函收到撤销索偿
 ```
 **脚本返回**：
 ```json

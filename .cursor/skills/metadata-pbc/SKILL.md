@@ -97,7 +97,7 @@ description: 创建和修改 PBC 构件元数据 XML 文件，包括接口定义
 
 | 属性 | 说明 | 来源 |
 |------|------|------|
-| `id` | 服务接口标识 | 用户指定或中文翻译大驼峰 + 构件类型（如 `GnfeeTrialChecksPbcbSvtp`） |
+| `id` | 服务接口标识 | 用户指定或中文翻译大驼峰 + 构件类型缩写（如 `GnfeeTrialChecksPbcb`） |
 | `name` | 接口方法名 | 用户指定或中文翻译小驼峰（如 `gnfeeTrialChecks`） |
 | `longname` | 服务中文名 | 用户提供 |
 
@@ -113,7 +113,7 @@ description: 创建和修改 PBC 构件元数据 XML 文件，包括接口定义
 | 模块 | {领域}-{构件类型}-api | {领域}-{构件类型}-impl |
 | 路径 | `src/main/resources/serviceType/{子目录}` | `src/main/resources/serviceimpl/{子目录}` |
 | 文件 | `{name}.{构件类型}.xml` | `{name}.{构件类型}Impl.xml` |
-| package | `com.spdb.ccbs.{领域}.{构件类型}.api.serviceType.{子目录}` | `com.spdb.ccbs.{领域}.{构件类型}.impl.serviceimpl.{子目录}` |
+| package | `com.spdb.ccbs.{领域}.{构件类型}.api.servicetype.{子目录}` | `com.spdb.ccbs.{领域}.{构件类型}.impl.serviceimpl.{子目录}` |
 
 **示例**（贷款领域 pbcb，子目录 gnfee）：
 
@@ -121,7 +121,7 @@ description: 创建和修改 PBC 构件元数据 XML 文件，包括接口定义
 |--|------|------|
 | 模块 | loan-pbcb-api | loan-pbcb-impl |
 | 文件 | `src/main/resources/serviceType/gnfee/GnfeeTrialChecks.pbcb.xml` | `src/main/resources/serviceimpl/gnfee/GnfeeTrialChecks.pbcbImpl.xml` |
-| package | `com.spdb.ccbs.loan.pbcb.api.serviceType.gnfee` | `com.spdb.ccbs.loan.pbcb.impl.serviceimpl.gnfee` |
+| package | `com.spdb.ccbs.loan.pbcb.api.servicetype.gnfee` | `com.spdb.ccbs.loan.pbcb.impl.serviceimpl.gnfee` |
 
 ### pbcc（公共构件）
 
@@ -133,7 +133,7 @@ description: 创建和修改 PBC 构件元数据 XML 文件，包括接口定义
 | 模块 | comm-pbcc-api | comm-pbcc-impl |
 | 路径 | `src/main/resources/serviceType/{子目录}` | `src/main/resources/serviceimpl/{子目录}` |
 | 文件 | `{name}.pbcc.xml` | `{name}.pbccImpl.xml` |
-| package | `com.spdb.ccbs.comm.pbcc.api.serviceType.{子目录}` | `com.spdb.ccbs.comm.pbcc.impl.serviceimpl.{子目录}` |
+| package | `com.spdb.ccbs.comm.pbcc.api.servicetype.{子目录}` | `com.spdb.ccbs.comm.pbcc.impl.serviceimpl.{子目录}` |
 
 ### 子目录规则
 
@@ -150,10 +150,10 @@ description: 创建和修改 PBC 构件元数据 XML 文件，包括接口定义
 
 | 领域 | 缩写 | 接口 package 基础 | 实现 package 基础 |
 |------|------|-------------------|-------------------|
-| 存款 | dept | `com.spdb.ccbs.dept.pbcb.api.serviceType` | `com.spdb.ccbs.dept.pbcb.impl.serviceimpl` |
-| 贷款 | loan | `com.spdb.ccbs.loan.pbcb.api.serviceType` | `com.spdb.ccbs.loan.pbcb.impl.serviceimpl` |
-| 结算 | sett | `com.spdb.ccbs.sett.pbcb.api.serviceType` | `com.spdb.ccbs.sett.pbcb.impl.serviceimpl` |
-| 公共 | comm | `com.spdb.ccbs.comm.pbcb.api.serviceType` | `com.spdb.ccbs.comm.pbcb.impl.serviceimpl` |
+| 存款 | dept | `com.spdb.ccbs.dept.pbcb.api.servicetype` | `com.spdb.ccbs.dept.pbcb.impl.serviceimpl` |
+| 贷款 | loan | `com.spdb.ccbs.loan.pbcb.api.servicetype` | `com.spdb.ccbs.loan.pbcb.impl.serviceimpl` |
+| 结算 | sett | `com.spdb.ccbs.sett.pbcb.api.servicetype` | `com.spdb.ccbs.sett.pbcb.impl.serviceimpl` |
+| 公共 | comm | `com.spdb.ccbs.comm.pbcb.api.servicetype` | `com.spdb.ccbs.comm.pbcb.impl.serviceimpl` |
 
 > 上表以 pbcb 为例，其他构件类型替换 `pbcb` 为 `pbcp`/`pbcc`/`pbct`。
 
@@ -198,7 +198,7 @@ description: 创建和修改 PBC 构件元数据 XML 文件，包括接口定义
 
 | 属性 | 说明 |
 |------|------|
-| `id` | 服务标识，用户指定或翻译大驼峰 + 构件类型后缀（如 `GnfeeTrialChecksPbcbSvtp`） |
+| `id` | 服务标识，用户指定或翻译大驼峰 + 构件类型缩写（如 `GnfeeTrialChecksPbcb`） |
 | `name` | 接口方法名，小驼峰（如 `gnfeeTrialChecks`） |
 | `longname` | 服务中文名 |
 
@@ -275,7 +275,7 @@ gnFeeTrialApsInPojo [保函费用试算输入]  多值  → 复合引用，id = 
 **脚本调用**（使用工作区绝对路径，python 命令）：
 
 ```bash
-python "{工作区根目录}/.cursor/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}/{领域}-resources/src/main/resources/type" 保函费用试算输入
+python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}/{领域}-resources/src/main/resources/type" 保函费用试算输入
 ```
 
 **`<search_dir>` 与领域对应**：
@@ -337,8 +337,8 @@ chargCdArray 收费代码数组 end
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="GnfeeTrialChecksPbcbSvtp" kind="auto" longname="保函费用试算校验" package="com.spdb.ccbs.sett.pbcb.api.serviceType.gnfee" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
-    <service id="GnfeeTrialChecksPbcbSvtp" name="gnfeeTrialChecks" longname="保函费用试算校验">
+<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="GnfeeTrialChecksPbcbSvtp" kind="auto" longname="保函费用试算校验" package="com.spdb.ccbs.sett.pbcb.api.servicetype.gnfee" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
+    <service id="GnfeeTrialChecksPbcb" name="gnfeeTrialChecks" longname="保函费用试算校验">
         <description><![CDATA[保函费用试算校验服务]]></description>
         <interface>
             <input packMode="false">
@@ -364,8 +364,8 @@ chargCdArray 收费代码数组 end
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="IoCpCustAccountQryPbcbSvtp" kind="auto" longname="客户账户查询业务构件" package="com.spdb.ccbs.dept.pbcb.api.serviceType" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
-    <service id="QueryCustAcctPbcbSvtp" name="queryCustAcct" longname="查询客户账户">
+<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="IoCpCustAccountQryPbcbSvtp" kind="auto" longname="客户账户查询业务构件" package="com.spdb.ccbs.dept.pbcb.api.servicetype" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
+    <service id="QueryCustAcctPbcb" name="queryCustAcct" longname="查询客户账户">
         <interface>
             <input packMode="false">
                 <field id="custId" type="MBaseType.U_KE_HU_BIAN_HAO" required="true" multi="false" array="false" longname="客户编号" ref="MDict.C.custId"/>
@@ -375,7 +375,7 @@ chargCdArray 收费代码数组 end
             </output>
         </interface>
     </service>
-    <service id="QueryCustBalancePbcbSvtp" name="queryCustBalance" longname="查询客户余额">
+    <service id="QueryCustBalancePbcb" name="queryCustBalance" longname="查询客户余额">
         <interface>
             <input packMode="false">
                 <field id="acctNo" type="MBaseType.U_ZHANG_HAO" required="true" multi="false" array="false" longname="账号" ref="MDict.A.acctNo"/>
@@ -479,7 +479,7 @@ chargCdArray 收费代码数组 end
 - [ ] 区分三类字段：普通字段（查 MCP）、复合类型引用字段（`[xxx]` 搜索脚本）、数组字段（start/end）
 - [ ] 调用 MCP 批量查询 input/output 中的普通字段
 - [ ] ⛔ **强制过滤**：MCP 返回 null 的字段不写入 XML
-- [ ] ⛔ **复合类型引用**：对每个 `[中文名]`，调用 `python "{工作区根目录}/.cursor/skills/metadata-composite-types/scripts/find_composite_ref.py" "{搜索目录绝对路径}" 中文名`；找到 → 生成无 array/ref 的 field；未找到 → 不写入 XML，提示用户；多匹配 → 询问用户
+- [ ] ⛔ **复合类型引用**：对每个 `[中文名]`，调用 `python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{搜索目录绝对路径}" 中文名`；找到 → 生成无 array/ref 的 field；未找到 → 不写入 XML，提示用户；多匹配 → 询问用户
 - [ ] 处理数组字段（识别 start/end 标记，子字段全 null 则整个 fields 不写入）
 - [ ] 生成接口 XML（serviceType + 多个 service + interface + input/output）
 - [ ] ⛔ **询问用户**：「是否同时创建该构件的实现文件？」；用户确认后才继续

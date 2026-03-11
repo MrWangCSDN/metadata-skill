@@ -16,6 +16,10 @@
             <field id="fieldName" type="MBaseType.U_TYPE" required="false" multi="false" array="false" longname="字段中文名" ref="MDict.X.fieldName"/>
         </output>
     </interface>
+    <flow>
+        <service mappingToProperty="true" serviceName="XxxPbsSvtp.XxxPbsSvtp" id="XxxPbsSvtp" longname="服务中文名"/>
+        <method method="methodName" id="methodName" longname="方法中文名" desc="方法描述"/>
+    </flow>
 </flowtran>
 ```
 
@@ -40,6 +44,10 @@
             </fields>
         </input>
     </interface>
+    <flow>                             ← 第 1 层(+4空格)
+        <service .../>                 ← 第 2 层(+8空格)
+        <method .../>                  ← 第 2 层(+8空格)
+    </flow>
 </flowtran>
 ```
 
@@ -311,6 +319,70 @@ def generate_flowtran_xml(trans_data):
     return '\n'.join(lines)
 ```
 
+## flow 标签（流程编排）
+
+`flow` 标签位于 `interface` 标签之后，是 `flowtran` 的直接子标签。包含 `service`（服务引用）和 `method`（方法节点）两种子标签。
+
+**缩进**:
+- flow 标签: 4 个空格(第 1 层)
+- service/method: 8 个空格(第 2 层)
+
+### service 标签（服务引用）
+
+在流程编排中引用已有的 pbs/pcs 服务。使用自闭合 `/>` 结尾。
+
+**属性**（必须单行）:
+
+| 属性 | 说明 | 固定值 |
+|------|------|--------|
+| `mappingToProperty` | 属性映射 | `"true"` |
+| `serviceName` | **组装值** `{serviceTypeId}.{serviceId}` | 脚本/MCP 返回字段拼接 |
+| `id` | service 标签的 id | — |
+| `longname` | service 的中文名 | — |
+
+属性顺序：`mappingToProperty → serviceName → id → longname`
+
+> `serviceName` = `{serviceTypeId}.{serviceId}`，由搜索结果的两个字段用 `.` 拼接。
+
+**示例**:
+```xml
+<service mappingToProperty="true" serviceName="IoCpInnerAcctInfoQryPbsSvtp.IoCpInnerAcctInfoQryPbsSvtp" id="IoCpInnerAcctInfoQryPbsSvtp" longname="内部户账户信息查询"/>
+```
+
+### method 标签（方法节点）
+
+自定义方法节点。使用自闭合 `/>` 结尾。
+
+**属性**（必须单行）:
+
+| 属性 | 说明 | 来源 |
+|------|------|------|
+| `method` | 方法名 | 用户指定英文名；未指定则中文翻译英文小驼峰 |
+| `id` | 方法标识 | 与 `method` 属性值一致 |
+| `longname` | 方法中文名 | 用户指定 |
+| `desc` | 方法描述 | 用户指定；未指定则与 longname 一致 |
+
+属性顺序：`method → id → longname → desc`
+
+**示例**:
+```xml
+<method method="beforeQryAcctInfo" id="beforeQryAcctInfo" longname="外调存款公共通用记账前处理" desc="外调存款公共通用记账前处理"/>
+```
+
+### 完整 flow 示例
+
+```xml
+<flow>
+    <service mappingToProperty="true" serviceName="IoCpInnerAcctInfoQryPbsSvtp.IoCpInnerAcctInfoQryPbsSvtp" id="IoCpInnerAcctInfoQryPbsSvtp" longname="内部户账户信息查询"/>
+    <service mappingToProperty="true" serviceName="LoanRepayModInfoQryPbsSvtp.LoanRepayModInfoQryPbsSvtp" id="LoanRepayModInfoQryPbsSvtp" longname="获取放款和贷款还款账号对应的模块信息"/>
+    <method method="beforeQryAcctInfo" id="beforeQryAcctInfo" longname="外调存款公共通用记账前处理" desc="外调存款公共通用记账前处理"/>
+    <service mappingToProperty="true" serviceName="DebtAcctWithdrawPbsSvtp.DebtAcctWithdrawPbsSvtp" id="DebtAcctWithdrawPbsSvtp" longname="负债账户支取"/>
+    <method method="firstPostAcctProcess" id="firstPostAcctProcess" longname="第一次记账后处理" desc="第一次记账后处理"/>
+</flow>
+```
+
+---
+
 ## 修改时的处理
 
 ### 保留原标签,仅更新 input/output
@@ -354,7 +426,10 @@ def generate_flowtran_xml(trans_data):
 | flowtran | 0 | 0 | `<flowtran ...>` |
 | description | 1 | 4 | `    <description>` |
 | interface | 1 | 4 | `    <interface>` |
+| flow | 1 | 4 | `    <flow>` |
 | input/output/property | 2 | 8 | `        <input>` |
+| service (flow 内) | 2 | 8 | `        <service .../>` |
+| method (flow 内) | 2 | 8 | `        <method .../>` |
 | field (input/output/property 内) | 3 | 12 | `            <field .../>` |
 | fields (数组) | 3 | 12 | `            <fields>` |
 | field (fields 内) | 4 | 16 | `                <field .../>` |

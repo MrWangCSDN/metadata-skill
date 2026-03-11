@@ -24,12 +24,26 @@
 | 结算 | sett | PBS / PCS |
 | 平台公共 | comm | PBS / PCS |
 
-### 模块映射
+### 模块映射（必须严格遵守）
 
-| 服务类型 | 接口模块 | 实现模块 |
-|---------|---------|---------|
-| PBS | {领域}-pbs-api | {领域}-pbs-impl |
-| PCS | {领域}-pcs-api | {领域}-pcs-impl |
+| 文件类型 | 模块名格式 |
+|---------|-----------|
+| 服务（接口） | `{领域}-{服务类型}-api` |
+| 服务实现 | `{领域}-{服务类型}-impl` |
+
+**领域**：dept、loan、sett、comm
+**服务类型**：pbs、pcs
+
+| 领域 | 服务类型 | 接口模块 | 实现模块 |
+|------|---------|---------|---------|
+| dept | pbs | dept-pbs-api | dept-pbs-impl |
+| dept | pcs | dept-pcs-api | dept-pcs-impl |
+| loan | pbs | loan-pbs-api | loan-pbs-impl |
+| loan | pcs | loan-pcs-api | loan-pcs-impl |
+| sett | pbs | sett-pbs-api | sett-pbs-impl |
+| sett | pcs | sett-pcs-api | sett-pcs-impl |
+| comm | pbs | comm-pbs-api | comm-pbs-impl |
+| comm | pcs | comm-pcs-api | comm-pcs-impl |
 
 ### id 命名规则
 
@@ -99,7 +113,7 @@
   输出：{字段}
 ```
 
-### 示例 1-A：单服务
+### 示例 1-A：单服务（含子目录）
 
 ```
 帮我创建 FtAcctgDeal 福费延账务处理 基础服务，贷款领域，子目录 ft
@@ -111,7 +125,23 @@ ftAcctgDeal 福费延账务处理
   输出：利息金额
 ```
 
-### 示例 1-B：不指定英文名
+### 示例 1-B：多服务
+
+```
+帮我创建 IoCpCustAccountQry 客户账户查询基础服务，存款领域
+
+服务1：
+QueryCustAcctPbsSvtp queryCustAcct 查询客户账户
+  输入：客户编号 必输
+  输出：账号
+
+服务2：
+QueryCustBalancePbsSvtp queryCustBalance 查询客户余额
+  输入：账号 必输
+  输出：可用余额
+```
+
+### 示例 1-C：不指定英文名
 
 ```
 帮我创建 价格计算 基础服务，贷款领域
@@ -122,7 +152,7 @@ ftAcctgDeal 福费延账务处理
   输出：利息金额
 ```
 
-> AI 自动翻译：服务英文名 `PriceCalc`，接口 id = `PriceCalcPbsSvtp`，service id = `PriceCalcPbsSvtp`，name = `calcLoanPrice`
+> AI 自动翻译：服务英文名 `PriceCalc`，接口 id = `PriceCalcPbsSvtp`，service name = `calcLoanPrice`
 
 ### AI 返回格式示例
 
@@ -173,6 +203,8 @@ submitOrder 提交订单
 ```
 
 **生成结果**：
+- 接口模块：`loan-pcs-api`
+- 实现模块：`loan-pcs-impl`
 - 接口文件：`loan-pcs-api/src/main/resources/serviceType/OrderSubmit.pcs.xml`
 - 实现文件（用户确认时）：`loan-pcs-impl/src/main/resources/serviceimpl/OrderSubmit.pcsImpl.xml`
 - 接口 id：`OrderSubmitPcsSvtp`
@@ -184,7 +216,7 @@ submitOrder 提交订单
 ### 示例
 
 ```
-帮我创建 GnfeeTrialChecks 保函费用试算校验 基础服务，结算领域
+帮我创建 GnfeeTrialChecks 保函费用试算校验 基础服务，结算领域，子目录 gnfee
 
 服务：
 保函费用试算校验
@@ -193,6 +225,10 @@ submitOrder 提交订单
 ```
 
 > AI 搜索复合类型，找到 `GnFeeTrialType.GnFeeTrialApsInPojo`，自动生成 input 中的复合引用字段
+
+**生成结果**：
+- 接口模块：`sett-pbs-api`
+- 实现模块：`sett-pbs-impl`
 
 ---
 
@@ -226,7 +262,31 @@ submitOrder 提交订单
 
 ---
 
-## 场景 5：修改现有服务
+## 场景 5：含数组字段的服务
+
+### 示例
+
+```
+创建 ChargeCalc 费用计算 基础服务，贷款领域
+
+服务：
+chargeCalc 费用计算
+  输入：
+    贷款合同号 必输
+    chargCdArray 收费代码数组 start
+        包含 收费项目编码 非必输
+        包含 收费金额     必输
+    chargCdArray 收费代码数组 end
+  输出：总金额
+```
+
+**生成结果**：
+- 接口模块：`loan-pbs-api`
+- 实现模块：`loan-pbs-impl`
+
+---
+
+## 场景 6：修改现有服务
 
 ### 指令模板（新增服务）
 
@@ -243,7 +303,7 @@ ftRepayCalc 福费延还款计算
   输出：还款金额
 ```
 
-> ⚠️ 修改会更新接口文件（新增 service）。若实现文件已存在，其 `serviceType` 引用无需变更；仅当服务 longname 变更时需同步更新实现的 longname。
+> 修改会更新接口文件（新增 service）。若实现文件已存在，其 `serviceType` 引用无需变更；仅当服务 longname 变更时需同步更新实现的 longname。
 
 ---
 
@@ -254,6 +314,13 @@ ftRepayCalc 福费延还款计算
 | 错误输入 | 正确写法 |
 |---------|---------|
 | `帮我创建 xxx 服务` | `帮我创建 xxx 基础服务` 或 `帮我创建 xxx 组合服务` |
+
+### ❌ 模块名错误
+
+| 错误 | 正确 |
+|------|------|
+| 服务生成到其他模块（如 pbcb-api） | 服务必须生成在 `{领域}-{服务类型}-api`（如 loan-pbs-api） |
+| 实现生成到其他模块 | 实现必须生成在 `{领域}-{服务类型}-impl`（如 loan-pbs-impl） |
 
 ### ❌ 字段未贯标
 

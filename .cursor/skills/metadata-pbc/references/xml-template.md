@@ -29,8 +29,8 @@
 
 ```xml
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="GnfeeTrialChecksPbcbSvtp" kind="auto" longname="保函费用试算校验" package="com.spdb.ccbs.sett.pbcb.api.serviceType.gnfee" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
-    <service id="GnfeeTrialChecksPbcbSvtp" name="gnfeeTrialChecks" longname="保函费用试算校验">
+<serviceType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="GnfeeTrialChecksPbcbSvtp" kind="auto" longname="保函费用试算校验" package="com.spdb.ccbs.sett.pbcb.api.servicetype.gnfee" xsi:noNamespaceSchemaLocation="ltts-model.xsd" outbound="false">
+    <service id="GnfeeTrialChecksPbcb" name="gnfeeTrialChecks" longname="保函费用试算校验">
         <description><![CDATA[保函费用试算校验服务]]></description>
         <interface>
             <input packMode="false">
@@ -95,7 +95,7 @@
 
 | 属性 | 说明 |
 |------|------|
-| `id` | 服务标识，大驼峰 + 构件类型后缀（如 `GnfeeTrialChecksPbcbSvtp`） |
+| `id` | 服务标识，大驼峰 + 构件类型缩写（如 `GnfeeTrialChecksPbcb`），注意与 serviceType id 不同 |
 | `name` | 接口方法名，小驼峰（如 `gnfeeTrialChecks`） |
 | `longname` | 服务中文名 |
 

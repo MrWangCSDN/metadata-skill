@@ -32,7 +32,7 @@
 | 模块 | {领域}-{构件类型}-api | {领域}-{构件类型}-impl |
 | 路径 | `src/main/resources/serviceType/{子目录}` | `src/main/resources/serviceimpl/{子目录}` |
 | 文件 | `{name}.{构件类型}.xml` | `{name}.{构件类型}Impl.xml` |
-| package | `com.spdb.ccbs.{领域}.{构件类型}.api.serviceType.{子目录}` | `com.spdb.ccbs.{领域}.{构件类型}.impl.serviceimpl.{子目录}` |
+| package | `com.spdb.ccbs.{领域}.{构件类型}.api.servicetype.{子目录}` | `com.spdb.ccbs.{领域}.{构件类型}.impl.serviceimpl.{子目录}` |
 
 **示例 1**（存款领域 pbcb，子目录 acct）：
 
@@ -40,7 +40,7 @@
 |--|------|------|
 | 模块 | dept-pbcb-api | dept-pbcb-impl |
 | 文件 | `src/main/resources/serviceType/acct/CustAcctOpen.pbcb.xml` | `src/main/resources/serviceimpl/acct/CustAcctOpen.pbcbImpl.xml` |
-| package | `com.spdb.ccbs.dept.pbcb.api.serviceType.acct` | `com.spdb.ccbs.dept.pbcb.impl.serviceimpl.acct` |
+| package | `com.spdb.ccbs.dept.pbcb.api.servicetype.acct` | `com.spdb.ccbs.dept.pbcb.impl.serviceimpl.acct` |
 
 **示例 2**（贷款领域 pbcb，无子目录）：
 
@@ -48,7 +48,7 @@
 |--|------|------|
 | 模块 | loan-pbcb-api | loan-pbcb-impl |
 | 文件 | `src/main/resources/serviceType/LoanApply.pbcb.xml` | `src/main/resources/serviceimpl/LoanApply.pbcbImpl.xml` |
-| package | `com.spdb.ccbs.loan.pbcb.api.serviceType` | `com.spdb.ccbs.loan.pbcb.impl.serviceimpl` |
+| package | `com.spdb.ccbs.loan.pbcb.api.servicetype` | `com.spdb.ccbs.loan.pbcb.impl.serviceimpl` |
 
 **示例 3**（结算领域 pbcp，子目录 gnfee）：
 
@@ -56,7 +56,7 @@
 |--|------|------|
 | 模块 | sett-pbcp-api | sett-pbcp-impl |
 | 文件 | `src/main/resources/serviceType/gnfee/GnfeeCalc.pbcp.xml` | `src/main/resources/serviceimpl/gnfee/GnfeeCalc.pbcpImpl.xml` |
-| package | `com.spdb.ccbs.sett.pbcp.api.serviceType.gnfee` | `com.spdb.ccbs.sett.pbcp.impl.serviceimpl.gnfee` |
+| package | `com.spdb.ccbs.sett.pbcp.api.servicetype.gnfee` | `com.spdb.ccbs.sett.pbcp.impl.serviceimpl.gnfee` |
 
 ---
 
@@ -70,7 +70,7 @@
 | 模块 | comm-pbcc-api | comm-pbcc-impl |
 | 路径 | `src/main/resources/serviceType/{子目录}` | `src/main/resources/serviceimpl/{子目录}` |
 | 文件 | `{name}.pbcc.xml` | `{name}.pbccImpl.xml` |
-| package | `com.spdb.ccbs.comm.pbcc.api.serviceType.{子目录}` | `com.spdb.ccbs.comm.pbcc.impl.serviceimpl.{子目录}` |
+| package | `com.spdb.ccbs.comm.pbcc.api.servicetype.{子目录}` | `com.spdb.ccbs.comm.pbcc.impl.serviceimpl.{子目录}` |
 
 **示例**（公共领域 pbcc，子目录 cust）：
 
@@ -78,7 +78,7 @@
 |--|------|------|
 | 模块 | comm-pbcc-api | comm-pbcc-impl |
 | 文件 | `src/main/resources/serviceType/cust/CustInfoQry.pbcc.xml` | `src/main/resources/serviceimpl/cust/CustInfoQry.pbccImpl.xml` |
-| package | `com.spdb.ccbs.comm.pbcc.api.serviceType.cust` | `com.spdb.ccbs.comm.pbcc.impl.serviceimpl.cust` |
+| package | `com.spdb.ccbs.comm.pbcc.api.servicetype.cust` | `com.spdb.ccbs.comm.pbcc.impl.serviceimpl.cust` |
 
 **示例**（公共领域 pbcc，无子目录）：
 
@@ -86,7 +86,7 @@
 |--|------|------|
 | 模块 | comm-pbcc-api | comm-pbcc-impl |
 | 文件 | `src/main/resources/serviceType/CustInfoQry.pbcc.xml` | `src/main/resources/serviceimpl/CustInfoQry.pbccImpl.xml` |
-| package | `com.spdb.ccbs.comm.pbcc.api.serviceType` | `com.spdb.ccbs.comm.pbcc.impl.serviceimpl` |
+| package | `com.spdb.ccbs.comm.pbcc.api.servicetype` | `com.spdb.ccbs.comm.pbcc.impl.serviceimpl` |
 
 ---
 
@@ -97,7 +97,7 @@
 | 根标签 | `<serviceType>` | `<serviceImpl>` |
 | 模块后缀 | `-api` | `-impl` |
 | 路径 | `serviceType/` | `serviceimpl/` |
-| package 关键词 | `api.serviceType` | `impl.serviceimpl` |
+| package 关键词 | `api.servicetype` | `impl.serviceimpl` |
 | 文件后缀 | `.{构件类型}.xml` | `.{构件类型}Impl.xml` |
 | serviceType id 后缀 | `{Xxx}Svtp` | `{Xxx}Impl` |
 | service ref | 无 | 有（`{接口serviceType.id}.{接口service.id}`） |
