@@ -46,7 +46,7 @@ description: 创建和修改 PBC 构件元数据 XML 文件，包括接口定义
 5. **处理子目录** — 如用户指定子目录，追加到路径和包名
 6. **调用 MCP 查询字段** — 对 service 中 input/output 的普通字段，使用 `dict-mcp-server.getDictDefByLongNameList` 批量查询
 7. **过滤未贯标字段** — MCP 返回 null 的字段**强制不写入 XML**，统一提示
-8. **处理复合类型引用** — 对 `[中文名]` 语法的字段，调用 `find_composite_ref.py` 脚本搜索
+8. **处理复合类型引用** — 对 `[xxx]` 语法的字段（支持中文和英文），优先调用 `find_composite_ref.py` 脚本搜索，查不到回退 MCP `queryComplexDetail`
 9. **处理数组字段** — 识别 start/end 标记的 fields 标签
 10. **生成接口 XML** — `serviceType` 标签 + `service` 标签（可包含多个 service）
 11. **询问用户** — 明确询问「是否同时创建该构件的实现文件？」；用户确认后继续
@@ -254,50 +254,80 @@ description: 创建和修改 PBC 构件元数据 XML 文件，包括接口定义
 
 ### 复合类型引用字段（[xxx] 语法）
 
-> ⛔ **强制规则：`[xxx]` 引用必须调用 `find_composite_ref.py` 脚本搜索，不得自行猜测 type。**
+> ⛔ **强制规则：`[xxx]` 引用必须通过搜索确认存在，不得自行猜测 type。**
+>
+> ⛔ **强制规则：搜索时必须严格使用 `[]` 中括号内的完整内容作为查询词，禁止对中括号内的内容做任何截取、拆分、翻译或改写。** 例如 `[保函费用试算输入]`，查询词必须是 `保函费用试算输入` 完整字符串；`[GnFeeTrialApsInPojo]`，查询词必须是 `GnFeeTrialApsInPojo` 完整字符串。
 
 **完整语法对照表**：
 
 ```
 输入写法                                      → 解析结果
 ──────────────────────────────────────────────────────────────────
-[保函费用试算输入]                            → 复合引用，单值，id 自动生成，无 array/ref
+[保函费用试算输入]                            → 复合引用（中文检索），单值，id 自动生成，无 array/ref
+[GnFeeTrialApsInPojo]                        → 复合引用（英文检索），单值，id 自动生成，无 array/ref
 [保函费用试算输入]  多值                      → 复合引用，multi=true，id 末尾加 List
 [保函费用试算输入]  必输                      → 复合引用，required=true
 [保函费用试算输入]  多值  必输                → 复合引用，multi=true，required=true，id 末尾加 List
 gnFeeTrialApsInPojo [保函费用试算输入]        → 复合引用，id = gnFeeTrialApsInPojo（用户指定）
+gnFeeTrialApsInPojo [GnFeeTrialApsInPojo]    → 复合引用（英文检索），id = gnFeeTrialApsInPojo
 gnFeeTrialApsInPojo [保函费用试算输入]  多值  → 复合引用，id = gnFeeTrialApsInPojo，multi=true
 普通字段名                                    → 普通字段，查 MCP，生成含 array/ref 的 field
 ```
 
-> **关键判断**：一行中有 `[...]` → 复合引用（调脚本，无 array/ref）；否则 → 普通字段（查 MCP，有 array/ref）。
+> **关键判断**：一行中有 `[...]` → 复合引用（中括号内含中文 → 按 longname 检索；纯英文 → 按 complexType id 检索）；否则 → 普通字段（查 MCP，有 array/ref）。
 
-**脚本调用**（使用工作区绝对路径，python 命令）：
+**`[xxx]` 支持中文和英文**：
+- `[保函费用试算输入]` → 中文，按 complexType 的 `longname` 精确匹配完整内容
+- `[GnFeeTrialApsInPojo]` → 英文，按 complexType 的 `id` 精确匹配完整内容
 
-```bash
-python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}/{领域}-resources/src/main/resources/type" 保函费用试算输入
-```
+**三步查询，逐步回退**：
 
-**`<search_dir>` 与领域对应**：
+1. **优先调用 `find_composite_ref.py` 脚本**（在工作空间下递归遍历所有 `*.c_schema.xml`）：
+   ```bash
+   python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}" 保函费用试算输入
+   ```
+   ```bash
+   python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}" GnFeeTrialApsInPojo
+   ```
+   - ⛔ 脚本参数必须是 `[]` 中括号内的**完整原文**，不得截取或改写
+   - 脚本自动判断：包含中文字符 → 按 `longname` 匹配；纯英文 → 按 `complexType id` 匹配
+   - 脚本内部已做去重（按 schemaId + complexTypeId）
 
-| 领域 | 搜索目录绝对路径 |
-|------|----------------|
-| 存款 | `{工作区根目录}/dept-resources/src/main/resources/type` |
-| 贷款 | `{工作区根目录}/loan-resources/src/main/resources/type` |
-| 结算 | `{工作区根目录}/sett-resources/src/main/resources/type` |
-| 平台公共 | `{工作区根目录}/comm-resources/src/main/resources/type` |
+2. **脚本查询不到时，调用 MCP 服务 `dict-mcp-server.queryComplexDetail`**：
+   - ⛔ 输入参数必须是 `[]` 中括号内的**完整原文**，不得截取或改写
+   - 返回复合类型定义信息（schemaId、complexTypeId、complexTypeLongname、type 等）
+   - MCP 返回的数据同样需要去重（按 schemaId + complexTypeId）
 
-**找到时**，生成（无 `array`、无 `ref` 属性）：
+3. **MCP 也查询不到时（⛔ 强制规则）**：
+   - **XML 中不写入该 field**，该引用完全跳过
+   - **立即在工作台输出**：`❌ [xxx] → 未找到匹配的复合类型，已跳过`
+   - **生成 XML 后在汇总提示中统一列出**
+
+**找到唯一匹配时**，生成（无 `array`、无 `ref` 属性）：
 ```xml
 <field id="gnFeeTrialApsInPojo" type="GnFeeTrialType.GnFeeTrialApsInPojo" required="false" multi="false" longname="保函费用试算输入"/>
 ```
 
-**未找到时（⛔ 强制规则）**：
-1. **XML 中不写入该 field**
-2. **在工作台输出** `❌ [保函费用试算输入] → 未找到匹配的 c_schema.xml，已跳过`
-3. **生成 XML 后在汇总框中统一提示**
+**去重后仍有多个匹配时**：在工作台列出所有候选（展示 schemaId、complexTypeId、type），明确告知用户让其选择其中一个，用户选择后再继续生成。
 
-**多个匹配时**：列出所有候选，询问用户选择哪一个。
+```
+🔍 复合对象引用搜索结果：
+  ⚠️ [保函费用试算输入] → 找到 2 个匹配（已去重），请选择其中一个：
+    1. GnFeeTrialType.GnFeeTrialApsInPojo（文件：ccbs-sett-impl/.../GnFeeTrialType.c_schema.xml）
+    2. CommFeeType.GnFeeTrialApsInPojo（文件：ccbs-comm-impl/.../CommFeeType.c_schema.xml）
+```
+
+**未找到时的汇总提示**：
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️  以下字段未写入 XML，请确认后补充：
+
+【复合对象引用未找到】（需确认 c_schema.xml 是否已创建）：
+  1. [保函费用试算输入]
+
+💡 确认文件已创建后，可重新执行以补充这些字段。
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
 
 **id 生成规则**：
 
@@ -479,7 +509,7 @@ chargCdArray 收费代码数组 end
 - [ ] 区分三类字段：普通字段（查 MCP）、复合类型引用字段（`[xxx]` 搜索脚本）、数组字段（start/end）
 - [ ] 调用 MCP 批量查询 input/output 中的普通字段
 - [ ] ⛔ **强制过滤**：MCP 返回 null 的字段不写入 XML
-- [ ] ⛔ **复合类型引用**：对每个 `[中文名]`，调用 `python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{搜索目录绝对路径}" 中文名`；找到 → 生成无 array/ref 的 field；未找到 → 不写入 XML，提示用户；多匹配 → 询问用户
+- [ ] ⛔ **复合类型引用**：对每个 `[xxx]`（支持中文和英文），严格使用 `[]` 内完整原文作为查询词，禁止截取/翻译/改写。三步查询回退：① 优先调用 `python "{工作区根目录}/.speedstudio/skills/metadata-composite-types/scripts/find_composite_ref.py" "{工作区根目录}" {查询词}`；② 脚本未找到 → 调用 MCP `queryComplexDetail`；③ MCP 也未找到 → 不写入 XML，提示用户。去重后多匹配 → 列出候选，询问用户选择
 - [ ] 处理数组字段（识别 start/end 标记，子字段全 null 则整个 fields 不写入）
 - [ ] 生成接口 XML（serviceType + 多个 service + interface + input/output）
 - [ ] ⛔ **询问用户**：「是否同时创建该构件的实现文件？」；用户确认后才继续
@@ -492,7 +522,7 @@ chargCdArray 收费代码数组 end
 
 - [ ] 定位接口文件（及实现文件，若存在）
 - [ ] 读取原文件，保留 `serviceType` 标签属性
-- [ ] 调用 MCP 查询新增字段；`[xxx]` 调用脚本搜索
+- [ ] 调用 MCP 查询新增字段；`[xxx]` 严格使用中括号内完整原文，三步查询回退（脚本 → MCP queryComplexDetail → 跳过）
 - [ ] 新增/修改 service 内容（仅接口文件）
 - [ ] 若构件 longname 变更且实现存在，更新实现文件的 longname
 - [ ] 保持 XML 格式一致

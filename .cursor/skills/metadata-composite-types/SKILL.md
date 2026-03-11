@@ -68,14 +68,14 @@ description: 处理基于 XML 的复合类型元数据文件（*.c_schema.xml）
 
 | 领域 | 文件路径 | schema package |
 |------|---------|----------------|
-| 存款 | `dept-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.dept.resources.type` |
-| 贷款 | `loan-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.loan.resources.type` |
-| 结算 | `sett-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.sett.resources.type` |
-| 平台公共 | `comm-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.comm.resources.type` |
+| 存款 | `src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.dept.resources.type` |
+| 贷款 | `src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.loan.resources.type` |
+| 结算 | `src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.sett.resources.type` |
+| 平台公共 | `src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.comm.resources.type` |
 
 **示例（贷款领域，无子目录）**：
 ```
-文件路径：loan-resources/src/main/resources/type/LoanApplType.c_schema.xml
+文件路径：src/main/resources/type/LoanApplType.c_schema.xml
 package： com.spdb.ccbs.loan.resources.type
 ```
 
@@ -84,13 +84,13 @@ package： com.spdb.ccbs.loan.resources.type
 > 用户明确指定子目录时，文件创建在 `type/{子目录}/` 下，package **同步追加**子目录。
 
 ```
-文件路径：{xxx-resources}/src/main/resources/type/{子目录}/{SchemaId}.c_schema.xml
+文件路径：src/main/resources/type/{子目录}/{SchemaId}.c_schema.xml
 package： {领域基础包}.{子目录（/改为.）}
 ```
 
 **示例（贷款领域，子目录 `ft/repay`）**：
 ```
-文件路径：loan-resources/src/main/resources/type/ft/repay/FtAcctgType.c_schema.xml
+文件路径：src/main/resources/type/ft/repay/FtAcctgType.c_schema.xml
 package： com.spdb.ccbs.loan.resources.type.ft.repay
 ```
 

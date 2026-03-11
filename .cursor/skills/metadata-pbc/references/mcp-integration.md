@@ -142,14 +142,67 @@ interface FieldDefinition {
 
 ### 复合类型引用字段
 
-不查 MCP，调用 `find_composite_ref.py` 脚本获取 type 值。
+不查 `getDictDefByLongNameList`，通过三步查询获取 type 值：
+
+**三步查询回退**：
+1. **优先调用 `find_composite_ref.py` 脚本**（工作空间递归遍历所有 `*.c_schema.xml`）
+2. **脚本未找到 → 调用 MCP `dict-mcp-server.queryComplexDetail`**
+3. **MCP 也未找到 → 不写入 XML，提示用户**
+
+> ⛔ **强制规则：查询参数必须是 `[]` 中括号内的完整原文，禁止截取、翻译或改写。**
 
 | 属性 | 来源 |
 |------|------|
-| `id` | 用户指定或脚本返回的 complexTypeId 首字母小写 + Pojo |
-| `type` | 脚本返回的 `{SchemaId}.{ComplexTypeId}` |
+| `id` | 用户指定或脚本/MCP 返回的 complexTypeId 首字母小写 + Pojo |
+| `type` | 脚本/MCP 返回的 `{SchemaId}.{ComplexTypeId}` |
 | `required` | 用户指定，默认 `false` |
 | `multi` | 用户指定，默认 `false` |
 | `longname` | 用户提供的中文名 |
 
 > 复合引用字段**不生成** `array` 和 `ref` 属性。
+
+---
+
+## queryComplexDetail 方法
+
+**MCP 服务名称**：`dict-mcp-server`
+**方法名**：`queryComplexDetail`
+**用途**：查询复合类型（complexType）的详细信息，作为 `find_composite_ref.py` 脚本的回退方案
+
+### 方法签名
+
+```typescript
+queryComplexDetail(query: string): ComplexTypeDefinition | null
+```
+
+### 输入参数
+
+**参数名**：`query`
+**类型**：`string`
+**说明**：复合类型的中文名称（longname）或英文标识（complexType id），必须是 `[]` 中括号内的完整原文
+
+**示例**：
+```javascript
+"保函费用试算输入"    // 中文查询
+"GnFeeTrialApsInPojo" // 英文查询
+```
+
+### 返回结果
+
+**类型**：`ComplexTypeDefinition | null`
+
+```typescript
+interface ComplexTypeDefinition {
+    schemaId: string;            // schema 标识（如 GnFeeTrialType）
+    complexTypeId: string;       // complexType 标识（如 GnFeeTrialApsInPojo）
+    complexTypeLongname: string; // complexType 中文名
+    type: string;                // 完整类型引用（如 GnFeeTrialType.GnFeeTrialApsInPojo）
+}
+```
+
+### 调用时机
+
+- `find_composite_ref.py` 脚本搜索返回 `found: false` 时
+- 返回结果需去重（按 schemaId + complexTypeId）
+- 去重后多条 → 列出候选让用户选择
+- 返回 null → 不写入 XML，汇总提示

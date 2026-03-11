@@ -25,24 +25,24 @@
 文件直接创建在各模块的 `src/main/resources/type/` 根目录下：
 
 ```
-{xxx-resources}/src/main/resources/type/{SchemaId}.c_schema.xml
+src/main/resources/type/{SchemaId}.c_schema.xml
 ```
 
 **四领域默认路径**：
 
 | 领域 | 默认文件路径 | 默认 package |
 |------|------------|-------------|
-| 存款 | `dept-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.dept.resources.type` |
-| 贷款 | `loan-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.loan.resources.type` |
-| 结算 | `sett-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.sett.resources.type` |
-| 平台公共 | `comm-resources/src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.comm.resources.type` |
+| 存款 | `src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.dept.resources.type` |
+| 贷款 | `src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.loan.resources.type` |
+| 结算 | `src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.sett.resources.type` |
+| 平台公共 | `src/main/resources/type/{SchemaId}.c_schema.xml` | `com.spdb.ccbs.comm.resources.type` |
 
 ### 指定子目录
 
 在 `src/main/resources/type/` 下创建子目录，**`package` 属性同步追加子目录**（`/` 转为 `.`）：
 
 ```
-{xxx-resources}/src/main/resources/type/{子目录}/{SchemaId}.c_schema.xml
+src/main/resources/type/{子目录}/{SchemaId}.c_schema.xml
 package = {领域基础包}.{子目录（用.分隔）}
 ```
 
@@ -50,10 +50,10 @@ package = {领域基础包}.{子目录（用.分隔）}
 
 | 子目录（路径） | 文件路径示例 | schema package |
 |--------------|------------|----------------|
-| `ft/repay` | `loan-resources/src/main/resources/type/ft/repay/FtAcctgType.c_schema.xml` | `com.spdb.ccbs.loan.resources.type.ft.repay` |
-| `synd` | `loan-resources/src/main/resources/type/synd/SyndAgrmLoanType.c_schema.xml` | `com.spdb.ccbs.loan.resources.type.synd` |
-| `cust` | `comm-resources/src/main/resources/type/cust/CustInfoType.c_schema.xml` | `com.spdb.ccbs.comm.resources.type.cust` |
-| `acct/query` | `dept-resources/src/main/resources/type/acct/query/AcctQryType.c_schema.xml` | `com.spdb.ccbs.dept.resources.type.acct.query` |
+| `ft/repay` | `src/main/resources/type/ft/repay/FtAcctgType.c_schema.xml` | `com.spdb.ccbs.loan.resources.type.ft.repay` |
+| `synd` | `src/main/resources/type/synd/SyndAgrmLoanType.c_schema.xml` | `com.spdb.ccbs.loan.resources.type.synd` |
+| `cust` | `src/main/resources/type/cust/CustInfoType.c_schema.xml` | `com.spdb.ccbs.comm.resources.type.cust` |
+| `acct/query` | `src/main/resources/type/acct/query/AcctQryType.c_schema.xml` | `com.spdb.ccbs.dept.resources.type.acct.query` |
 
 **子目录规则**：
 - 文件路径中使用 `/` 分隔（如 `ft/repay`）

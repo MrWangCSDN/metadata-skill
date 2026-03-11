@@ -28,7 +28,7 @@ description: 创建和修改基于 XML 的表定义元数据文件（*.tables.xm
 
 1. **确定 SchemaId** — 用户指定英文名（蛇形命名法，首字母大写，如 `Acct_info_table`）；未指定则根据中文翻译生成同样格式
 2. **确定领域和包路径** — 根据领域映射 bcc 模块和包路径（详见 [references/package-module-mapping.md](references/package-module-mapping.md)）
-3. **确定文件路径** — `{领域}-bcc/src/main/resources/tables/{子目录}/`
+3. **确定文件路径** — `src/main/resources/tables/{子目录}/`
 4. **识别用户指定的内容** — 逐项判断用户是否指定了字段、ODB 索引、物理索引，**未提及的部分不生成**
 5. **调用 MCP 查询字段** — 对用户指定的字段和索引中涉及的字段，使用 `dict-mcp-server.getDictDefByLongNameList` 批量查询
 6. **过滤未贯标字段** — MCP 返回 null 的字段**强制不写入 XML**，统一提示（⚠️ 强制规则）
@@ -70,21 +70,21 @@ description: 创建和修改基于 XML 的表定义元数据文件（*.tables.xm
 
 | 领域 | 模块 | 默认文件路径 | 默认 package |
 |------|------|-------------|-------------|
-| 存款 | dept-bcc | `dept-bcc/src/main/resources/tables/` | `com.spdb.ccbs.dept.bcc.tables` |
-| 贷款 | loan-bcc | `loan-bcc/src/main/resources/tables/` | `com.spdb.ccbs.loan.bcc.tables` |
-| 结算 | sett-bcc | `sett-bcc/src/main/resources/tables/` | `com.spdb.ccbs.sett.bcc.tables` |
-| 平台公共 | comm-bcc | `comm-bcc/src/main/resources/tables/` | `com.spdb.ccbs.comm.bcc.tables` |
+| 存款 | dept-bcc | `src/main/resources/tables/` | `com.spdb.ccbs.dept.bcc.tables` |
+| 贷款 | loan-bcc | `src/main/resources/tables/` | `com.spdb.ccbs.loan.bcc.tables` |
+| 结算 | sett-bcc | `src/main/resources/tables/` | `com.spdb.ccbs.sett.bcc.tables` |
+| 平台公共 | comm-bcc | `src/main/resources/tables/` | `com.spdb.ccbs.comm.bcc.tables` |
 
 ### 指定子目录
 
 ```
-文件路径：{领域}-bcc/src/main/resources/tables/{子目录}/{SchemaId}.tables.xml
+文件路径：src/main/resources/tables/{子目录}/{SchemaId}.tables.xml
 package： {领域基础包}.{子目录（/改为.）}
 ```
 
 **示例**（贷款领域，子目录 `ft`）：
 ```
-文件路径：loan-bcc/src/main/resources/tables/ft/Loan_acct_table.tables.xml
+文件路径：src/main/resources/tables/ft/Loan_acct_table.tables.xml
 package： com.spdb.ccbs.loan.bcc.tables.ft
 ```
 
@@ -352,7 +352,7 @@ ODB索引：
 - [ ] 确认 SchemaId（蛇形命名法，首字母大写，如 `Loan_acct_table` / 根据中文翻译生成同样格式）
 - [ ] 确定领域，映射 bcc 模块和包路径
 - [ ] ⛔ **路径判断**：用户是否指定子目录？
-  - 否 → `{领域}-bcc/src/main/resources/tables/{SchemaId}.tables.xml`
+  - 否 → `src/main/resources/tables/{SchemaId}.tables.xml`
   - 是 → 追加子目录，package 同步追加
 - [ ] 确定 table 标签的 id（schema id 全部转小写，如 `Loan_acct_table` → `loan_acct_table`）
 - [ ] ⛔ **按需生成判断**：逐项检查用户是否指定了以下内容
